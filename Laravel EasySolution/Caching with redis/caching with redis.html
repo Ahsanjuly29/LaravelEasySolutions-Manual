@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>how to use redis as default cache driver</title>
+    <title>how to use redis as default cache driver database</title>
+    <title>how to use predis</title>
+    <link rel="stylesheet" href="https://ahsanjuly29.github.io/My-Notes-Easy-Solutions/common.css">
+
+</head>
+
+<body>
+
+    <h4>How to use redis as default cashe driver in laravel ??</h4>
+    <pre>
+        first install this package in your Lravel Project:
+        <code>composer require predis/predis</code>
+    </pre>
+
+    <p>N.B: laravel new version doesn's need to instll. it already instelled with laravel sail.</p>
+    <p>When the installation is complete,
+        we can find our Redis configuration settings in
+    <pre>config/database.php.</pre>
+    In the file, you will see a redis array containing the Redis server.
+    By default, the client is set to phpredis,
+    and since predis is being used in this tutorial, the client will be changed to predis
+    </p>
+    <pre>
+        <code>
+            'redis' => [
+
+            'client' => env('REDIS_CLIENT', 'predis'),
+          
+            'options' => [
+                'cluster' => env('REDIS_CLUSTER', 'redis'),
+                'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+            ],
+          
+            'default' => [
+                'url' => env('REDIS_URL'),
+                'host' => env('REDIS_HOST', '127.0.0.1'),
+                'password' => env('REDIS_PASSWORD', null),
+                'port' => env('REDIS_PORT', '6379'),
+                'database' => env('REDIS_DB', '0'),
+            ],
+          
+        ],            
+        </code>
+    </pre>
+
+    <p>
+        After that is done, go ahead to register your REDIS_CLIENT in the .env file:
+    </p>
+    <pre>
+        <code>REDIS_CLIENT=predis</code>
+    </pre>
+    <p>
+        Now in the controller, where u wanna use cache, for Example, In <code>StoreCacheController.php</code>
+        want to save all the City related data from DB to cache.
+    </p>
+
+    <h4>
+        <strong style="background-color: aliceblue;">Storing / Updating</strong>
+    </h4>
+    <pre>
+        <code>
+            use App\Models\CityList;
+            use Illuminate\Support\Facades\Redis;
+            
+            public function updateCityListCache()
+            {
+              $cachedData = Redis::get('CityList');
+              if(isset($cachedData))
+              {
+                Redis::del('CityList'); // delete old data from cache
+              }
+
+                $cities = json_encode(CityList::get()->toArray());
+                Redis::set('CityList', $cities); // Storing new Values 
+
+                return response()->json([
+                    'status' => 1,
+                    'message' => 'Fetched from database',
+                    'data' => $cities,
+                ]);
+            }
+        </code>
+    </pre>
+
+
+    <h3>How to use caching as redis in Laravel Sail ?</h3>
+
+    <p>
+        Need to change on<code>config/cache.php.</code>and in<code>.env</code> change
+        <code>CACHE_DRIVER=redis</code>.
+    </p>
+
+    <pre>
+        <code>
+
+            use Illuminate\Support\Facades\Cache;
+
+            public function getCityListCacheData()
+            {
+                $Citylists = Cache::get('CityList'); // fetching CityList from Cache
+
+                if (empty($Citylists))
+                {
+                    if ($this->updateCityListCache()) // updating CityLists Cache Data
+                    {
+                        $Citylists = Cache::get('allHotelDetailsData'); // again fetching CityList from Cache
+                    }
+                }
+                return $Citylists;
+            }
+        </code>
+    </pre>
+</body>
+
+</html>
