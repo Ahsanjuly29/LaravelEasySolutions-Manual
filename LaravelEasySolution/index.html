@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Read My Repository</title>
+</head>
+
+<body>
+
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+	<script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+	<!-- <script>
+		var fs = require('fs');
+
+		function readFiles(dirname, onFileContent, onError) {
+			fs.readdir(dirname, function (err, filenames) {
+				if (err) {
+					onError(err);
+					return;
+				}
+				filenames.forEach(function (filename) {
+					fs.readFile(dirname + filename, 'utf-8', function (err, content) {
+						if (err) {
+							onError(err);
+							return;
+						}
+						onFileContent(filename, content);
+					});
+				});
+			});
+		}	
+	</script> -->
+
+	<script>
+		var filenames = [], foldernames = [];
+		var url = "/";
+		var req = new XMLHttpRequest();
+		req.open("GET", url, true);
+		req.onreadystatechange = function () {
+			if (req.readyState === 4) {
+				document.write(req.responseText);
+				getNames();
+			}
+		};
+		req.send();
+
+		function getNames() {
+			var files = document.querySelectorAll("a.icon.file");
+			var folders = document.querySelectorAll("a.icon.dir");
+			files.forEach(function (item) { filenames.push(item.textContent) })
+			folders.forEach(function (item) { foldernames.push(item.textContent.slice(0, -1)) })
+			console.log(filenames);
+			console.log(foldernames);
+		}
+
+	</script>
+
+</body>
+
+</html>
