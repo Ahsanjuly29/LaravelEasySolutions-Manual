@@ -2,813 +2,111 @@
 <html lang="en">
 
 <head>
-    <title>Quraan list</title>
-
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes Easy Solutions - Dynamic Folders</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1,
+        p,
+        a {
+            color: white;
+        }
+
+        .folder {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+        }
+
+        .folder:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .folder-icon {
+            font-size: 40px;
+            color: #c29500;
+        }
+
+        .folder-name {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 
-<body class="bg-dark">
-    <table class="table table-dark table-responsive table-bordered table-hover table-striped my-4 mx-auto w-75">
-        <thead>
-            <tr>
-                <th colspan="7" class="text-center">List of Surah to Learn this Ramadan Mubarak</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th>#</th>
-                <th>Reciting dates</th>
-                <th>Ttile</th>
-                <th>Number of Verses (Rukus)</th>
-                <th>Place of Revelation</th>
-                <th>Juz</th>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td rowspan="3" style="vertical-align: middle;"></td>
-                <td><a href="https://www.youtube.com/watch?v=zE_WFiHnSlY"> Al-Fatiha </a></td>
-                <td>7 (1)</td>
-                <td>Makkah</td>
-                <td>1</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td><a href="https://www.youtube.com/watch?v=uRxyu_IoXJk&t=2s">Al-Baqarah</a></td>
-                <td>286 (40)</td>
-                <td>Madinah</td>
-                <td>1-3</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td><a href="https://www.youtube.com/watch?v=HUt0yOQ1G7I">Al Imran</a></td>
-                <td>200 (20)</td>
-                <td>Madinah</td>
-                <td>3-4</td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>                
-                <td>
-                    <a href="https://www.youtube.com/watch?v=LinJ2c2p10w">An-Nisa</a>
-                </td>
-                <td>176 (24)</td>
-                <td>Madinah</td>
-                <td>4-6</td>
-            </tr>
-            <tr>
-                <td>5</td>
-                <td>Al-Ma'idah</td>
-                <td>120 (16)</td>
-                <td>Madinah</td>
-                <td>6-7</td>
-            </tr>
-            <tr>
-                <td>6</td>
-                <td>26 Mar, 2023</td>
-                <td>Al-An'am</td>
-                <td>165 (20)</td>
-                <td>Makkah</td>
-                <td>7-8</td>
-            </tr>
-            <tr>
-                <td>7</td>
-                <td>27 Mar, 2023</td>
-                <td>Al-A'raf</td>
-                <td>206 (24)</td>
-                <td>Makkah</td>
-                <td>8-9</td>
-            </tr>
-            <tr>
-                <td>8</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>
-                <td>Al-Anfal</td>
-                <td>75 (10)</td>
-                <td>Madinah</td>
-                <td>9-10</td>
-            </tr>
-            <tr>
-                <td>9</td>
-                <td>At-Tawbah</td>
-                <td>129 (16)</td>
-                <td>Madinah</td>
-                <td>10-11</td>
-            </tr>
-            <tr>
-                <td>10</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>                
-                <td>Yunus</td>
-                <td>109 (11)</td>
-                <td>Makkah</td>
-                <td>11</td>
-            </tr>
-            <tr>
-                <td>11</td>
-                <td>Hud</td>
-                <td>123 (10)</td>
-                <td>Makkah</td>
-                <td>11-12</td>
-            </tr>
-            <tr>
-                <td>12</td>
-                <td rowspan="3" style="vertical-align: middle;"></td>                
-                <td>Yusuf</td>
-                <td>111 (12)</td>
-                <td>Makkah</td>
-                <td>12-13</td>
-            </tr>
-            <tr>
-                <td>13</td>
-                <td>Ar-Ra'd</td>
-                <td>43 (6)</td>
-                <td>Madinah</td>
-                <td rowspan="2">
-                    <p>13</p>
-                </td>
-            </tr>
-            <tr>
-                <td>14</td>
-                <td>Ibrahim</td>
-                <td>52 (7)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>15</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>                
-                <td>Al-Hijr</td>
-                <td>99 (6)</td>
-                <td>Makkah</td>
-                <td rowspan="2">
-                    <p>14</p>
-                </td>
-            </tr>
-            <tr>
-                <td>16</td>
-                <td>An-Nahl</td>
-                <td>128 (16)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>17</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>
-                <td>Al-Isra</td>
-                <td>111 (12)</td>
-                <td>Makkah</td>
-                <td>15</td>
-            </tr>
-            <tr>
-                <td>18</td>
-                <td>Al-Kahf</td>
-                <td>110 (12)</td>
-                <td>Makkah</td>
-                <td>15-16</td>
-            </tr>
-            <tr>
-                <td>19</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>
-                <td>Maryam</td>
-                <td>98 (6)</td>
-                <td>Makkah</td>
-                <td rowspan="2">
-                    <p>16</p>
-                </td>
-            </tr>
-            <tr>
-                <td>20</td>
-                <td>Ta-Ha</td>
-                <td>135 (8)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>21</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>
-                <td>Al-Anbiya</td>
-                <td>112 (7)</td>
-                <td>Makkah</td>
-                <td rowspan="2">
-                    <p>17</p>
-                </td>
-            </tr>
-            <tr>
-                <td>22</td>
-                <td>Al-Hajj</td>
-                <td>78 (10)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>23</td>
-                <td rowspan="3" style="vertical-align: middle;"></td>
-                <td>Al-Mu'minun</td>
-                <td>118 (6)</td>
-                <td>Makkah</td>
-                <td rowspan="2">
-                    <p>18</p>
-                </td>
-            </tr>
-            <tr>
-                <td>24</td>
-                <td>An-Nur</td>
-                <td>64 (9)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>25</td>
-                <td>Al-Furqan</td>
-                <td>77 (6)</td>
-                <td>Makkah</td>
-                <td>18-19</td>
-            </tr>
-            <tr>
-                <td>26</td>
-                <td>05 April, 2023</td>
-                <td>Ash-Shu'ara</td>
-                <td>227 (11)</td>
-                <td>Makkah</td>
-                <td>19</td>
-            </tr>
-            <tr>
-                <td>27</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>                
-                <td>An-Naml</td>
-                <td>93 (7)</td>
-                <td>Makkah</td>
-                <td>19-20</td>
-            </tr>
-            <tr>
-                <td>28</td>
-                <td>Al-Qasas</td>
-                <td>88 (9)</td>
-                <td>Makkah</td>
-                <td>20</td>
-            </tr>
-            <tr>
-                <td>29</td>
-                <td rowspan="8" style="vertical-align: middle;"></td>
-                <td>Al-Ankabut</td>
-                <td>69 (7)</td>
-                <td>Makkah</td>
-                <td>20-21</td>
-            </tr>
-            <tr>
-                <td>30</td>
-                <td>Ar-Rum</td>
-                <td>60 (6)</td>
-                <td>Makkah</td>
-                <td rowspan="3">
-                    <p>21</p>
-                </td>
-            </tr>
-            <tr>
-                <td>31</td>
-                <td>Luqmaan</td>
-                <td>34 (4)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>32</td>
-                <td>As-Sajda</td>
-                <td>30 (3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>33</td>
-                <td>Al-Ahzaab</td>
-                <td>73 (9)</td>
-                <td>Madinah</td>
-                <td>21-22</td>
-            </tr>
-            <tr>
-                <td>34</td>
-                <td>Saba (surah)</td>
-                <td>54 (6)</td>
-                <td>Makkah</td>
-                <td rowspan="2">
-                    <p>22</p>
-                </td>
-            </tr>
-            <tr>
-                <td>35</td>
-                <td>Faatir</td>
-                <td>45 (5)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>36</td>
-                <td>Yaseen</td>
-                <td>83 (5)</td>
-                <td>Makkah</td>
-                <td>22-23</td>
-            </tr>
-            <tr>
-                <td>37</td>
-                <td rowspan="1" style="vertical-align: middle;"></td>
-                <td>As-Saaffaat</td>
-                <td>182 (5)</td>
-                <td>Makkah</td>
-                <td rowspan="2">
-                    <p>23</p>
-                </td>
-            </tr>
-            <tr>
-                <td>38</td>
-                <td rowspan="5" style="vertical-align: middle;"></td>                
-                <td>Saad</td>
-                <td>88 (5)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>39</td>
-                <td>Az-Zumar</td>
-                <td>75 (8)</td>
-                <td>Makkah</td>
-                <td>23-24</td>
-            </tr>
-            <tr>
-                <td>40</td>
-                <td>Ghafir</td>
-                <td>85 (9)</td>
-                <td>Makkah</td>
-                <td>24</td>
-            </tr>
-            <tr>
-                <td>41</td>
-                <td>Fussilat</td>
-                <td>54 (6)</td>
-                <td>Makkah</td>
-                <td>24-25</td>
-            </tr>
-            <tr>
-                <td>42</td>
-                <td>Ash_Shooraa</td>
-                <td>53 (5)</td>
-                <td>Makkah</td>
-                <td rowspan="4">
-                    <p>25</p>
-                </td>
-            </tr>
-            <tr>
-                <td>43</td>
-                <td rowspan="10" style="vertical-align: middle;"></td>
-                <td>Az-Zukhruf</td>
-                <td>89 (7)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>44</td>
-                <td>Ad-Dukhaan</td>
-                <td>59 (3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>45</td>
-                <td>Al-Jaathiyah</td>
-                <td>37 (4)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>46</td>
-                <td>Al-Ahqaaf</td>
-                <td>35 (4 1/2)</td>
-                <td>Makkah</td>
-                <td rowspan="5">
-                    <p>26</p>
-                </td>
-            </tr>
-            <tr>
-                <td>47</td>
-                <td>Muhammad</td>
-                <td>38 (4)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>48</td>
-                <td>Al-Fath</td>
-                <td>29 (4 1/2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>49</td>
-                <td>Al-Hujuraat</td>
-                <td>18 (2 1/2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>50</td>
-                <td>Qaaf</td>
-                <td>45 (3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>51</td>
-                <td>Adh-Dhaariyaat</td>
-                <td>60 (2 1/2)</td>
-                <td>Makkah</td>
-                <td>26-27</td>
-            </tr>
-            <tr>
-                <td>52</td>
-                <td rowspan="4" style="vertical-align: middle;"></td>
-                <td>At-Toor</td>
-                <td>49 (2 1/2)</td>
-                <td>Makkah</td>
-                <td rowspan="6">
-                    <p>27</p>
-                </td>
-            </tr>
-            <tr>
-                <td>53</td>
-                <td>An-Najm</td>
-                <td>62 (2 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>54</td>
-                <td>Al-Qamar</td>
-                <td>55 (2 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>55</td>
-                <td>Ar-Rahman</td>
-                <td>78 (3)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>56</td>
-                <td rowspan="2" style="vertical-align: middle;"></td>
-                <td>Al-Waqi'a</td>
-                <td>96 (3 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>57</td>
-                <td>Al-Hadeed</td>
-                <td>29 (4)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>58</td>
-                <td rowspan="12" style="vertical-align: middle;"></td>
-                <td>Al-Mujadila</td>
-                <td>22 (3 1/2)</td>
-                <td>Madinah</td>
-                <td rowspan="9">
-                    <p>28</p>
-                </td>
-            </tr>
-            <tr>
-                <td>59</td>
-                <td>Al-Hashr</td>
-                <td>24 (3 1/2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>60</td>
-                <td>Al-Mumtahanah</td>
-                <td>13 (2 1/2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>61</td>
-                <td>As-Saff</td>
-                <td>14 (1 1/2</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>62</td>
-                <td>Al-Jumu'ah</td>
-                <td>11 (1 1/2</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>63</td>
-                <td>Al-Munafiqoon</td>
-                <td>11 (1 1/2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>64</td>
-                <td>At-Taghabun</td>
-                <td>18 (2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>65</td>
-                <td>At-Talaq</td>
-                <td>12 (2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>66</td>
-                <td>At-Tahreem</td>
-                <td>12 (2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>67</td>
-                <td>Al-Mulk</td>
-                <td>30 (1 1/2)</td>
-                <td>Makkah</td>
-                <td rowspan="11">
-                    <p>29</p>
-                </td>
-            </tr>
-            <tr>
-                <td>68</td>
-                <td>Al-Qalam</td>
-                <td>52 (2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>69</td>
-                <td>Al-Haaqqa</td>
-                <td>52 (2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>70</td>
-                <td rowspan="4" style="vertical-align: middle;"></td>
-                <td>Al-Ma'aarij</td>
-                <td>44 (1 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>71</td>
-                <td>Nooh</td>
-                <td>28 (1 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>72</td>
-                <td>Al-Jinn</td>
-                <td>28 (2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>73</td>
-                <td>Al-Muzzammil</td>
-                <td>20 (1 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>74</td>
-                <td rowspan="4" style="vertical-align: middle;"></td>
-                <td>Al-Muddaththir</td>
-                <td>56 (2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>75</td>
-                <td>Al-Qiyamah</td>
-                <td>40 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>76</td>
-                <td>Al-Insaan</td>
-                <td>31 (2)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>77</td>
-                <td>Al-Mursalaat</td>
-                <td>50 (1 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>78</td>
-                <td rowspan="6" style="vertical-align: middle;"></td>
-                <td>An-Naba'</td>
-                <td>40 (1 1/2)</td>
-                <td>Makkah</td>
-                <td rowspan="37">
-                    <p>30</p>
-                </td>
-            </tr>
-            <tr>
-                <td>79</td>
-                <td>An-Naazi'aat</td>
-                <td>46 (1 1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>80</td>
-                <td>Abasa</td>
-                <td>42 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>81</td>
-                <td>At-Takweer</td>
-                <td>29 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>82</td>
-                <td>Al-Infitar</td>
-                <td>19 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>83</td>
-                <td>Al-Mutaffifeen</td>
-                <td>36 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>84</td>
-                <td rowspan="31" style="vertical-align: middle;"></td>
-                <td>Al-Inshiqaaq</td>
-                <td>25 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>85</td>
-                <td>Al-Burooj</td>
-                <td>22 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>86</td>
-                <td>At-Taariq</td>
-                <td>17 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>87</td>
-                <td>Al-A'laa</td>
-                <td>19 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>88</td>
-                <td>Al-Ghaashiyah</td>
-                <td>26 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>89</td>
-                <td>Al-Fajr</td>
-                <td>30 (1)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>90</td>
-                <td>Al-Balad</td>
-                <td>20 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>91</td>
-                <td>Ash-Shams</td>
-                <td>15 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>92</td>
-                <td>Al-Layl</td>
-                <td>21 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>93</td>
-                <td>Ad-Dhuha</td>
-                <td>11 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>94</td>
-                <td>Ash-Sharh (Al-Inshirah)</td>
-                <td>8 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>95</td>
-                <td>At-Teen</td>
-                <td>8 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>96</td>
-                <td>Al-Alaq</td>
-                <td>19 (1/2)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>97</td>
-                <td>Al-Qadr</td>
-                <td>5 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>98</td>
-                <td>Al-Bayyinahh</td>
-                <td>8 (1)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>99</td>
-                <td>Az-Zalzalah</td>
-                <td>8 (1/3)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>100</td>
-                <td>Al-'Aadiyaat</td>
-                <td>11 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>101</td>
-                <td>Al-Qaari'ah</td>
-                <td>11 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>102</td>
-                <td>At-Takaathur</td>
-                <td>8 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>103</td>
-                <td>Al-'Asr</td>
-                <td>3 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>104</td>
-                <td>Al-Humazah</td>
-                <td>9 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>105</td>
-                <td>Al-Feel</td>
-                <td>5 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>106</td>
-                <td>Quraysh</td>
-                <td>4 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>107</td>
-                <td>Al-Maa'oon</td>
-                <td>7 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>108</td>
-                <td>Al-Kawthar</td>
-                <td>3 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>109</td>
-                <td>Al-Kaafiroon</td>
-                <td>6 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>110</td>
-                <td>An-Nasr</td>
-                <td>3 (1/3)</td>
-                <td>Madinah</td>
-            </tr>
-            <tr>
-                <td>111</td>
-                <td>Al-Masad</td>
-                <td>5 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>112</td>
-                <td>Al-Ikhlaas</td>
-                <td>4 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>113</td>
-                <td>Al-Falaq</td>
-                <td>5 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-            <tr>
-                <td>114</td>
-                <td>Al-Naas</td>
-                <td>6 (1/3)</td>
-                <td>Makkah</td>
-            </tr>
-        </tbody>
-    </table>
+<body>
+
+    <h1 class="text-decoration-underline">My Notes Easy Solutions - Folder Listing</h1>
+    <br>
+    <div class="container mt-4">
+        <div class="row" id="folder-list">
+            <!-- Folders will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (for optional interactivity) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const baseURL = `https://ahsanjuly29.github.io/My-Notes-Easy-Solutions/`;
+        const apiUrl = `https://api.github.com/repos/ahsanjuly29/My-Notes-Easy-Solutions/contents/`;
+
+        const folderList = document.getElementById('folder-list');
+
+        // Fetch folder names from GitHub repository
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(item => {
+                    if (item.type === 'dir') {
+                        const div = document.createElement('div');
+                        div.className = 'col-sm-6 col-md-4 col-lg-3 mb-4';  // Bootstrap columns for responsive layout
+
+                        const a = document.createElement('a');
+                        a.className = 'folder';
+                        a.href = `${baseURL}${item.name}/index.html`;
+
+                        const icon = document.createElement('i');
+                        icon.className = 'fas fa-folder folder-icon align-middle'; // Font Awesome folder icon
+                        a.appendChild(icon);
+
+                        const folderName = document.createElement('p');
+                        folderName.className = 'folder-name text-decoration-underline d-inline ms-3';
+                        folderName.textContent = item.name;
+                        a.appendChild(folderName);
+
+                        div.appendChild(a);
+                        folderList.appendChild(div);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching folders:', error);
+            });
+    </script>
+
 </body>
 
 </html>
