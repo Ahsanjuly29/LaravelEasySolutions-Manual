@@ -1,0 +1,152 @@
+ok make this for readme md and laravel doc looks design
+
+
+
+# **Documentation CRUD Operations with AJAX and Yajra DataTables in Laravel**
+
+This guide demonstrates how to easily implement CRUD operations in Laravel using AJAX for seamless interaction and Yajra DataTables for efficient data presentation and alert using Toastr.
+
+---
+
+## **Installation**
+
+### 1. Install Laravel (If you don't have Laravel installed, create a new project):
+
+```bash
+composer create-project --prefer-dist laravel/laravel myproject
+```
+---
+
+## **Setting Up the Environment**
+
+
+### 1. Create the Model, Controller, and Migration
+
+Generate the model, controller, and migration with:
+
+```bash
+php artisan make:model ModelName -mcr
+```
+
+* `-m` for migration
+* `-c` for controller
+* `-r` for resource controller (auto-generates CRUD methods)
+
+
+### 2. Define Routes
+
+#### Web Routes (`routes/web.php`)
+
+```php
+Route::middleware('auth')->get('/ajax-crud', function () {
+return view('ajax.index', [
+'allData' => ModelName::orderBy('id', 'DESC')->paginate(10)
+]);
+});
+```
+
+#### API Routes (`routes/api.php`)
+
+```php
+Route::middleware(['auth:sanctum'])->resource('api-model-name', ModelNameController::class);
+```
+
+---
+
+#define migration first.
+search for the model name in migration file and setup that first
+
+
+
+# Model Operations
+Open Model.
+
+// Add fillable or guarded.
+protected $fillable = [];
+
+// add relationships
+// public function relationshipCallerName()
+// {
+// return $this->belongsTo(Model::class, 'foreign_key', 'primary_key');
+// }
+
+// Add Scope if needed. i used this for filtering on action
+// public function scopeOwner(Builder $query): void
+// {
+// $query->with('assignedTo', 'createdBy')->whereAny(['assigned_to', 'created_by'], Auth::user()->id);
+// }
+
+
+step 5 : (skippable):
+Can directly do inside controller but doing this will make code looks more standard and work more faster. Follow the files inside App/Action for more.
+
+
+## **CRUD Operations**
+
+### 1. **Read**: Fetch Data and Display in DataTable
+
+**AJAX initialization** (Client-side):
+inside master.app file add these as needed. can follow file exist there as well.
+
+```cs
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="bearer-token" content="{{ session('loginToken' . auth()->user()->id) }}">
+
+<title>{{ config('app.name', 'Laravel') }}</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+
+{{-- Css --}}
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/pagination.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}" />
+
+<link rel="stylesheet" href="//cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+{{-- Css Files  --}}
+{{-- @vite(['assets/css/app.css', 'assets/css/bootstrap.css', 'resources/sass/app.scss']) --}}
+@yield('custom-css')
+```
+
+@yield('main-body')
+
+```javascript
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
+
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+<script src="{{ asset('assets/js/ajax-jquery-crud.js') }}"></script>
+
+{{-- Js Files  --}}
+{{-- @vite(['resources/assets/js/app.js', 'resources/assets/js/bootstrap.js', 'resources/assets/js/bootstrap.min.js', 'resources/assets/js/jquery.min.js']) --}}
+@yield('custom-js')
+```
+
+**Controller method**:
+
+Check on index TaskController file.
+
+** Custom Request
+
+Command
+
+php artisan make:request test
+
+then follow the Files given
+
+** Blade implements
+
+Follow the files given
