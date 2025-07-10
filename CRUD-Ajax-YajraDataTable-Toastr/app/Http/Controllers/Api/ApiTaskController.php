@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ApiAuth;
+namespace App\Http\Controllers\Api;
 
 use App\Actions\TaskApi\FilterTasks;
 use App\Http\Controllers\Controller;
@@ -18,7 +18,6 @@ class ApiTaskController extends Controller
      */
     public function index(Request $request, FilterTasks $filterTasks)
     {
-        dd(1);
         try {
             $data = $filterTasks->handle($request, 100); // dataAmount
 

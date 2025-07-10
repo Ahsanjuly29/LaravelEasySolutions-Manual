@@ -20,8 +20,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/pagination.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}" />
-    <link rel="stylesheet" href="//cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
     {{-- Css Files  --}}
@@ -30,7 +30,6 @@
 </head>
 
 <body class="font-sans antialiased">
-
     <div class="container border border-dark border-2 rounded p-0">
         <div class="p-5 pb-3 bg-secondary text-white text-center">
             <h1>Task Management System</h1>
@@ -117,12 +116,10 @@
             <p>Footer</p>
         </div>
     </div>
-    @include('ajax.form-modal')
 </body>
 
 
 {{-- Js Files  --}}
-
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
@@ -139,5 +136,5 @@
 {{-- Js Files  --}}
 {{-- @vite(['resources/assets/js/app.js', 'resources/assets/js/bootstrap.js', 'resources/assets/js/bootstrap.min.js', 'resources/assets/js/jquery.min.js']) --}}
 @yield('custom-js')
-
+@include('ajax.form-modal')
 </html>
