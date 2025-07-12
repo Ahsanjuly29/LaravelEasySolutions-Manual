@@ -76,11 +76,11 @@ $(document).ready(function () {
     };
 
     // Event Bindings
-    $(document).on('click', '.create-task', function () {
+    $(document).on('click', '.create-btn', function () {
         openModal($(this).attr('data-url'));
     });
 
-    $(document).on('click', '.edit-task', function () {
+    $(document).on('click', '.edit-btn', function () {
         ajaxCall({
             type: 'GET',
             url: $(this).data('url'),
@@ -101,7 +101,7 @@ $(document).ready(function () {
     });
 
     $(document).on('click', '.delete-btn', function () {
-        if (confirm('Are you sure you want to delete this task?')) {
+        if (confirm('Are you sure you want to delete this data?')) {
             ajaxCall({
                 type: 'DELETE',
                 url: $(this).data('url'),
@@ -129,7 +129,7 @@ $(document).ready(function () {
             return $(this).val();
         }).get();
 
-        if (confirm('Are you sure you want to delete these tasks?')) {
+        if (confirm('Are you sure you want to delete these data?')) {
             ajaxCall({
                 type: 'DELETE',
                 url: $(this).data('url'),

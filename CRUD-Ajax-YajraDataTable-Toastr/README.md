@@ -227,17 +227,7 @@ Locate the relevant migration file inside the `database/migrations` directory ba
 Schema::create('models', function (Blueprint $table) {
     $table->id();
     $table->string('name');
-    $table->longText('description')->nullable();
-    $table->string('status')->default('PENDING')->comment('PENDING', 'IN PROGRESS', 'COMPLETED');
-    $table->unsignedBigInteger('assigned_to');
-    $table->unsignedBigInteger('created_by');
-    $table->dateTime('due_date');
     $table->timestamps();
-});
-
-Schema::table('models', function (Blueprint $table) {
-    $table->foreign('assigned_to')->references('id')->on('users');
-    $table->foreign('created_by')->references('id')->on('users');
 });
 ```
 
@@ -254,7 +244,7 @@ Navigate to the corresponding model inside `app/Models`.
 Add fillable or guarded fields to control mass assignment.
 
 ```php
-protected $fillable = [];
+protected $fillable = ['name'];
 ```
 
 > 🛡️ Use either `$fillable` or `$guarded` based on your security preference.
@@ -361,12 +351,93 @@ Update your master Blade file (e.g., `resources/views/master/app.blade.php`) to 
 
 Use the Blade template below to set up AJAX response handling with success message support using Toastr.
 
-```php
+```blade
 @extends('master.app')
 @section('custom-css')
 @endsection
 
 @section('main-body')
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <p>
+                            Manage Data
+                        </p>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="button" class="border border-primary w-100 btn btn-primary create-btn"
+                            data-url="{{ route('api-model-name.store') }}">
+                            Create
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="check_all_box" />
+                                    </div>
+                                </th>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($allData as $item)
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input checkitem" type="checkbox"
+                                                value="{{ $item->id }}" name="id" />
+                                        </div>
+                                    </td>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>
+                                        {{ $item->name ?? '--' }}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex">
+                                            <button class="btn btn-sm btn-outline-primary me-1 edit-btn"
+                                                data-url="{{ route('api-model-name.edit', $item->id) }}"> Edit
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger ms-1 delete-btn"
+                                                data-url="{{ route('api-model-name.destroy', $item->id) }}"
+                                                data-id="{{ $item->id }}">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            <tr>
+                                <td colspan="13">
+                                    <button id="multiple_delete_btn" class="btn btn-xs btn-outline-danger mr-2 d-none"
+                                        type="submit" data-url="{{ route('api-model-name.destroy', 1) }}">
+                                        Delete all
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="100">
+                                    {!! $allData->render() !!}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('custom-js')
@@ -383,6 +454,7 @@ Use the Blade template below to set up AJAX response handling with success messa
         });
     </script>
 @endsection
+
 ```
 
 ---
