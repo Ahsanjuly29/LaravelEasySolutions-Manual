@@ -16,6 +16,152 @@ If Laravel is not installed, create a new project:
 ```bash
 composer create-project --prefer-dist laravel/laravel myproject
 ```
+ 
+ 
+---
+
+# 📘 Authentication using Laravel Breeze(if Needed)
+
+## Install Laravel Breeze (Blade)
+
+```bash
+composer require laravel/breeze --dev
+php artisan breeze:install blade
+php artisan migrate
+npm install
+npm run dev
+```
+
+---
+
+## Install Laravel Breeze (Vue)
+
+```bash
+php artisan breeze:install vue
+php artisan migrate
+npm install
+npm run dev
+```
+
+---
+
+## Install Laravel Breeze (React)
+
+```bash
+php artisan breeze:install react
+php artisan migrate
+npm install
+npm run dev
+```
+
+---
+
+## Install Laravel Breeze (API)
+
+```bash
+php artisan breeze:install api
+php artisan migrate
+```
+
+---
+
+## Add Phone Field to Registration Form(Customizing if Needed)
+
+**Edit:** `resources/views/auth/register.blade.php`
+
+```blade
+<div class="mt-4">
+   <x-input-label for="phone" :value="__('Phone')" />
+   <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone')" required autocomplete="phone" />
+   <x-input-error :messages="$errors->get('phone')" class="mt-2" />
+</div>
+```
+
+---
+
+## Add Phone Field to Database
+
+```bash
+php artisan make:migration add_phone_field_to_users_table
+```
+
+**Edit Migration:**
+
+```php
+Schema::table('users', function (Blueprint $table) {
+   $table->string('phone')->nullable();
+});
+```
+
+```bash
+php artisan migrate
+```
+
+---
+
+## Update Controller
+
+**Edit:** `App\Http\Controllers\Auth\RegisteredUserController.php`
+
+```php
+$request->validate([
+   'name' => ['required', 'string', 'max:255'],
+   'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+   'phone' => ['required', 'string', 'max:255'],
+   'password' => ['required', 'confirmed', Rules\Password::defaults()],
+]);
+
+$user = User::create([
+   'name' => $request->name,
+   'email' => $request->email,
+   'phone' => $request->phone,
+   'password' => Hash::make($request->password),
+]);
+```
+
+---
+
+## Update User Model
+
+**Edit:** `App\Models\User.php`
+
+```php
+protected $fillable = [
+   'name',
+   'email',
+   'phone',
+   'password',
+];
+```
+
+---
+
+## Enable Email Verification
+
+**Edit:** `App\Models\User.php`
+
+```php
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+class User extends Authenticatable implements MustVerifyEmail
+```
+
+---
+
+## Protect Route with Email Verification
+
+**Add Route:**
+
+```php
+Route::get('/only-verified', function () {
+   return view('only-verified');
+})->middleware(['auth', 'verified']);
+```
+
+---
+
+✅ Done.
+
 
 ---
 
