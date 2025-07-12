@@ -416,8 +416,45 @@ After creation, it was moved into the `Api` folder. You can either:
 ```php
 namespace App\Http\Controllers\Api;
 ```
-
 Then update any route references accordingly.
+
+---
+
+## 📌 Add Helpers
+
+### 1. **Create Helpers File**
+
+```bash
+touch app/Helpers/helpers.php
+```
+
+### 2. **Add Functions**
+
+Add your custom functions from helpers file - Helpers/custom/ApiCustomResponse.php
+
+```php
+require_once 'custom/Validation.php';
+require_once 'custom/ApiCustomResponse.php';
+```
+
+### 3. **Autoload in Composer**
+
+Edit `composer.json`:
+
+```json
+"autoload": {
+    // if any,
+    "files": [
+        "app/Helpers/helpers.php"
+    ]
+}
+```
+
+### 4. **Dump Autoload**
+
+```bash
+composer dump-autoload
+```
 
 ---
 

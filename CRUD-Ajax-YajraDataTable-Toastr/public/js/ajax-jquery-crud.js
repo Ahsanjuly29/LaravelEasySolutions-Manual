@@ -111,8 +111,8 @@ $(document).ready(function () {
         openModal(url);
     });
 
+    
     // Edit JS
-    $(document).ready(function () {
         // Edit/Show Data, Using Ajax
         $(document).on('click', '.edit-task', function () {
             var url = $(this).data('url'); // Get the delete URL
@@ -144,7 +144,7 @@ $(document).ready(function () {
 
             ajaxCall(param); // Submit form Using Ajax
         });
-    });
+
 
     /*
     // Single delete data from table

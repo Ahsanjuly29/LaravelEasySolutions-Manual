@@ -1,26 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
 
-use App\Actions\TaskApi\FilterTasks;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\TaskRequest;
-use App\Models\Task;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-class ApiTaskController extends Controller
-{
     /**
      * Display all listing of task.
      *
      * @response
      */
+
+use App\Models\ModelName;
+
     public function index(Request $request, FilterTasks $filterTasks)
     {
         try {
             $data = $filterTasks->handle($request, 100); // dataAmount
-
             return successResponse('Showing All Tasks', $data);
         } catch (\Exception $e) {
             return errorResponse($e);
@@ -36,9 +28,9 @@ class ApiTaskController extends Controller
             $data = $request->validated();
             $data['created_by'] = $data['assigned_to'] = Auth::user()->id;
 
-            $taskData = Task::create($data);
+            $allData = ModelName::create($data);
 
-            return successResponse('New Task has been Created', $taskData);
+            return successResponse('New Task has been Created', $allData);
         } catch (\Exception $e) {
             return errorResponse($e);
         }
@@ -150,4 +142,3 @@ class ApiTaskController extends Controller
             return errorResponse($e);
         }
     }
-}
