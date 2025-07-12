@@ -16,6 +16,11 @@ If Laravel is not installed, create a new project:
 ```bash
 composer create-project --prefer-dist laravel/laravel myproject
 ```
+Or
+```bash
+Laravel New TestProject
+```
+
  
  
 ---
