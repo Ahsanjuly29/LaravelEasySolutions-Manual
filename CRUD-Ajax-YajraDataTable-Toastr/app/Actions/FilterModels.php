@@ -9,7 +9,8 @@ class FilterModels
     public function handle($request, $dataAmount)
     {
         // there is not administration Control. So, Each person can see only his/her own tasks.
-        $taskData = ModelName::owner();
+        // $taskData = ModelName::owner(); // calling Scope of res
+        $taskData = ModelName::query();
 
         if (! empty($request->status)) {
             $taskData->where('status', $request->status);

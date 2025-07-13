@@ -1,195 +1,207 @@
 
 ---
 
-# 📚 CRUD Operations with AJAX and Yajra DataTables in Laravel
+# 📚 Laravel CRUD with AJAX, Yajra DataTables & Toastr Alerts
 
-This guide shows how to implement **CRUD operations** in Laravel using **AJAX** for seamless interaction and **Yajra DataTables** for efficient data presentation, along with **Toastr** for alerts.
+Full-stack setup using Laravel API Resource Controllers, Blade Views, AJAX-based front-end, Yajra DataTables, and Toastr for notifications.
 
 ---
 
-## ⚙️ Installation
-
-### 1. Install Laravel
-
-If Laravel is not installed, create a new project:
+## ⚙️ Step 1: Install Laravel
 
 ```bash
 composer create-project --prefer-dist laravel/laravel myproject
 ```
-Or
-```bash
-Laravel New TestProject
-```
 
- 
- 
----
-
-# 📘 Authentication using Laravel Breeze(if Needed)
-
-## Install Laravel Breeze (Blade)
+or
 
 ```bash
-composer require laravel/breeze --dev
-php artisan breeze:install blade
-php artisan migrate
-npm install
-npm run dev
+laravel new TestProject
 ```
 
 ---
 
-## Install Laravel Breeze (Vue)
+## 📘 Optional: Authentication with Laravel Breeze
 
-```bash
-php artisan breeze:install vue
-php artisan migrate
-npm install
-npm run dev
-```
+🔗 **Click Here (Link)** — to setup Laravel Breeze for authentication scaffolding.
 
 ---
 
-## Install Laravel Breeze (React)
-
-```bash
-php artisan breeze:install react
-php artisan migrate
-npm install
-npm run dev
-```
-
----
-
-## Install Laravel Breeze (API)
-
-```bash
-php artisan breeze:install api
-php artisan migrate
-```
-
----
-
-## Add Phone Field to Registration Form(Customizing if Needed)
-
-**Edit:** `resources/views/auth/register.blade.php`
-
-```blade
-<div class="mt-4">
-   <x-input-label for="phone" :value="__('Phone')" />
-   <x-text-input id="phone" class="block mt-1 w-full" type="text" name="phone" :value="old('phone')" required autocomplete="phone" />
-   <x-input-error :messages="$errors->get('phone')" class="mt-2" />
-</div>
-```
-
----
-
-## Add Phone Field to Database
-
-```bash
-php artisan make:migration add_phone_field_to_users_table
-```
-
-**Edit Migration:**
-
-```php
-Schema::table('users', function (Blueprint $table) {
-   $table->string('phone')->nullable();
-});
-```
-
-```bash
-php artisan migrate
-```
-
----
-
-## Update Controller
-
-**Edit:** `App\Http\Controllers\Auth\RegisteredUserController.php`
-
-```php
-$request->validate([
-   'name' => ['required', 'string', 'max:255'],
-   'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-   'phone' => ['required', 'string', 'max:255'],
-   'password' => ['required', 'confirmed', Rules\Password::defaults()],
-]);
-
-$user = User::create([
-   'name' => $request->name,
-   'email' => $request->email,
-   'phone' => $request->phone,
-   'password' => Hash::make($request->password),
-]);
-```
-
----
-
-## Update User Model
-
-**Edit:** `App\Models\User.php`
-
-```php
-protected $fillable = [
-   'name',
-   'email',
-   'phone',
-   'password',
-];
-```
-
----
-
-## Enable Email Verification
-
-**Edit:** `App\Models\User.php`
-
-```php
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-
-class User extends Authenticatable implements MustVerifyEmail
-```
-
----
-
-## Protect Route with Email Verification
-
-**Add Route:**
-
-```php
-Route::get('/only-verified', function () {
-   return view('only-verified');
-})->middleware(['auth', 'verified']);
-```
-
----
-
-✅ Done.
-
-
----
-
-## 🛠️ Setting Up the Environment
-
-### 1. Create Model, Resource Controller, and Migration
-
-Generate the model, controller, and migration with this command:
+## 🛠️ Step 2: Create Model, Controller & Migration
 
 ```bash
 php artisan make:model ModelName -mcr --api
 ```
 
-* `-m` : Create migration
-* `-c` : Create controller
-* `-r` : Resource controller (auto-generates CRUD methods)
-* `--api` : API controller without view methods
+| Flag    | Description                             |
+| ------- | --------------------------------------- |
+| `-m`    | Create migration                        |
+| `-c`    | Create controller                       |
+| `-r`    | Create resource controller (CRUD ready) |
+| `--api` | API controller (no view methods)        |
 
 ---
 
-### 2. Define Routes
+## 🎨 Step 3: View Files & Frontend Setup
 
-#### 🌐 Web Routes (`routes/web.php`)
+Set up AJAX-based CRUD using Blade + jQuery.
+
+---
+
+### 🧱 Master Layout (resources/views/master/app.blade.php)
+
+#### 🖼️ Head Section
+
+```blade
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="bearer-token" content="{{ session('loginToken' . auth()->user()?->id) }}">
+
+    <title>{{ config('app.name', 'Laravel App') }}</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+
+    {{-- CSS --}}
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/pagination.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/buttons.dataTables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/all.min.css') }}">
+
+    @yield('custom-css')
+</head>
+
+@yield('main-body')
+```
+
+#### 📜 Script Section
+
+```blade
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('assets/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/js/jszip.min.js') }}"></script>
+<script src="{{ asset('assets/js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('assets/js/buttons.print.min.js') }}"></script>
+<script src="{{ asset('assets/js/toastr.min.js') }}"></script>
+<script src="{{ asset('assets/js/ajax-jquery-crud.js') }}"></script>
+
+@yield('custom-js')
+```
+
+---
+
+## ⚡ Step 4: Blade View for AJAX CRUD (`index.blade.php`)
+
+```blade
+@extends('master.app')
+
+@include('ajax.form-modal')
+
+@section('custom-css')
+@endsection
+
+@section('main-body')
+@endsection
+
+@section('custom-js')
+<script type="text/javascript">
+    $(document).ready(function() {
+        success = function(data) {
+            if (data.message == 'Open Modal') {
+                openModal(data);
+            } else {
+                toastr.success(data.message);
+                closeModal();
+            }
+        }
+    });
+</script>
+@endsection
+```
+
+---
+
+### 🧩 Contents inside `main-body`
+
+#### 🔘 Create Button
+
+```blade
+<button type="button" class="border border-primary w-100 btn btn-primary create-btn"
+    data-url="{{ route('api-model-name.store') }}">
+    Create
+</button>
+```
+
+#### 📊 DataTable View
+
+```blade
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="text-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="check_all_box" />
+                    </div>
+                </th>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($allData as $item)
+                <tr>
+                    <td class="text-center">
+                        <div class="form-check">
+                            <input class="form-check-input checkitem" type="checkbox"
+                                value="{{ $item->id }}" name="id" />
+                        </div>
+                    </td>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->name ?? '--' }}</td>
+                    <td>
+                        <div class="d-flex">
+                            <button class="btn btn-sm btn-outline-primary me-1 edit-btn"
+                                data-url="{{ route('api-model-name.edit', $item->id) }}">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger ms-1 delete-btn"
+                                data-url="{{ route('api-model-name.destroy', $item->id) }}"
+                                data-id="{{ $item->id }}">
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+            <tr>
+                <td colspan="13">
+                    <button id="multiple_delete_btn" class="btn btn-xs btn-outline-danger mr-2 d-none"
+                        type="submit" data-url="{{ route('api-model-name.destroy', 1) }}">
+                        Delete all
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="100">{!! $allData->render() !!}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+```
+
+---
+
+## 🌐 Step 5: Define Routes
+
+### 📄 Web Routes (`routes/web.php`)
 
 ```php
 Route::middleware('auth')->get('/ajax-crud', function () {
@@ -199,13 +211,14 @@ Route::middleware('auth')->get('/ajax-crud', function () {
 });
 ```
 
-#### 🔗 API Routes (`routes/api.php`)
+### 🔗 API Routes (`routes/api.php`)
 
 ```php
 Route::middleware(['auth:sanctum'])->resource('api-model-name', ModelNameController::class);
 ```
 
-> **Note:** In Laravel 12, the API routes folder might not exist by default. Create it by running:
+> 🧱 **Laravel 12 Note:**
+> If `routes/api.php` doesn't exist:
 
 ```bash
 php artisan install:api
@@ -213,15 +226,7 @@ php artisan install:api
 
 ---
 
-# 📘 Model-Based Migration & Operations Guide
-
-This guide describes how to create and manage migrations and models efficiently in a Laravel project. Follow these steps to define schema, model fillables, relationships, and scopes.
-
----
-
-## 📂 Search Migration File & Add Columns
-
-Locate the relevant migration file inside the `database/migrations` directory based on your model name. Add the required columns to the table.
+## 🧬 Migration Columns (Modify as Needed)
 
 ```php
 Schema::create('models', function (Blueprint $table) {
@@ -231,303 +236,286 @@ Schema::create('models', function (Blueprint $table) {
 });
 ```
 
-> ✅ Define your schema and set up relationships via foreign keys after creating the table.
-
 ---
 
-## 🧩 Model Operations
-
-Navigate to the corresponding model inside `app/Models`.
-
-### 🔐 Define Fillable Fields
-
-Add fillable or guarded fields to control mass assignment.
+## 🧾 Fillable / Guarded
 
 ```php
 protected $fillable = ['name'];
+// OR
+protected $guarded = ['id'];
 ```
-
-> 🛡️ Use either `$fillable` or `$guarded` based on your security preference.
 
 ---
 
-### 🔗 Define Relationships
-
-Create Eloquent relationships inside your model as needed.
+## 🔗 Relationships (Example)
 
 ```php
-// public function relationshipCallerName()
-// {
-//     return $this->belongsTo(Model::class, 'foreign_key', 'primary_key');
-// }
+public function relationshipCallerName()
+{
+    return $this->belongsTo(Model::class, 'foreign_key', 'primary_key');
+}
 ```
-
-> 🧠 Update `relationshipCallerName`, `Model::class`, and keys as per your database design.
 
 ---
 
-### 🔍 Add Local Scopes (Optional)
-
-Use scopes to simplify commonly used query logic.
+## 🔍 Scope (Optional)
 
 ```php
-// public function scopeOwner(Builder $query): void
-// {
-//     $query->with('assignedTo', 'createdBy')->whereAny(['assigned_to', 'created_by'], Auth::user()->id);
-// }
-```
-
-> 🎯 Great for filtering data based on ownership or access logic.
-
----
-
-## ⚙️ CRUD Operations
-
-This section describes how to integrate front-end scripts and styles for a smooth **AJAX-based CRUD system** using Blade templates and jQuery.
-
----
-
-### 🧱 Master Layout Setup (Client-Side)
-
-Update your master Blade file (e.g., `resources/views/master/app.blade.php`) to include the necessary CSS and JS assets. These links support DataTables, Bootstrap, Font Awesome, Toastr, and AJAX logic.
-
-#### 🖼️ Head Section
-
-```blade
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="bearer-token" content="{{ session('loginToken' . auth()->user()->id) }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-
-    {{-- Css --}}
-    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/pagination.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}" />
-
-    <link rel="stylesheet" href="//cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" />
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-
-    {{-- Css Files  --}}
-    {{-- @vite(['assets/css/app.css', 'assets/css/bootstrap.css', 'resources/sass/app.scss']) --}}
-
-    @yield('custom-css')
-</head>
-
-@yield('main-body')
-```
-
-#### 📜 Scripts Section
-
-```blade
-<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.flash.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-<script src="{{ asset('assets/js/ajax-jquery-crud.js') }}"></script>
-
-{{-- Js Files  --}}
-{{-- @vite(['resources/assets/js/app.js', 'resources/assets/js/bootstrap.js', 'resources/assets/js/bootstrap.min.js', 'resources/assets/js/jquery.min.js']) --}}
-@yield('custom-js')
-@include('ajax.form-modal')
+public function scopeOwner(Builder $query): void
+{
+    $query->with('assignedTo', 'createdBy')->whereAny(['assigned_to', 'created_by'], Auth::user()->id);
+}
 ```
 
 ---
 
-### ⚡ AJAX Initialization (Client-Side)
+# ✅ API Section & Architecture
 
-Use the Blade template below to set up AJAX response handling with success message support using Toastr.
+---
 
-```blade
-@extends('master.app')
-@section('custom-css')
-@endsection
+## 📁 Folder Structure
 
-@section('main-body')
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <p>
-                            Manage Data
-                        </p>
-                    </div>
-                    <div class="col-sm-4">
-                        <button type="button" class="border border-primary w-100 btn btn-primary create-btn"
-                            data-url="{{ route('api-model-name.store') }}">
-                            Create
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th class="text-center">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="check_all_box" />
-                                    </div>
-                                </th>
-                                <th>Id</th>
-                                <th>Name</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($allData as $item)
-                                <tr>
-                                    <td class="text-center">
-                                        <div class="form-check">
-                                            <input class="form-check-input checkitem" type="checkbox"
-                                                value="{{ $item->id }}" name="id" />
-                                        </div>
-                                    </td>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>
-                                        {{ $item->name ?? '--' }}
-                                    </td>
-                                    <td>
-                                        <div class="d-flex">
-                                            <button class="btn btn-sm btn-outline-primary me-1 edit-btn"
-                                                data-url="{{ route('api-model-name.edit', $item->id) }}"> Edit
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger ms-1 delete-btn"
-                                                data-url="{{ route('api-model-name.destroy', $item->id) }}"
-                                                data-id="{{ $item->id }}">
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                            <tr>
-                                <td colspan="13">
-                                    <button id="multiple_delete_btn" class="btn btn-xs btn-outline-danger mr-2 d-none"
-                                        type="submit" data-url="{{ route('api-model-name.destroy', 1) }}">
-                                        Delete all
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="100">
-                                    {!! $allData->render() !!}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-@section('custom-js')
-    <script type="text/javascript">
-        $(document).ready(function() {
-            success = function(data) {
-                if (data.message == 'Open Modal') {
-                    openModal(data);
-                } else {
-                    toastr.success(data.message);
-                    closeModal();
-                }
-            }
-        });
-    </script>
-@endsection
-
+```
+app/
+├── Actions/
+│   └── ModelApi/
+│       └── FilterModels.php
+├── Helpers/
+│   ├── custom/
+│   │   ├── Validation.php
+│   │   └── ApiCustomResponse.php
+│   └── helpers.php
+├── Http/
+│   ├── Controllers/
+│   │   └── Api/
+│   │       └── YourController.php
+│   ├── Requests/
+│   │   └── TaskRequest.php
+├── Traits/
+│   └── IsValidRequest.php
 ```
 
 ---
 
-## 🧭 Controller Method & Request Validation
-
-This section outlines how to set up and organize your **controller**, optionally use **action classes**, and apply **form request validation** to build a clean and secure CRUD system in Laravel.
-
----
-
-### 🗂️ Controller Setup
-
-The main logic for your CRUD operations resides in the controller. You can use the default location or organize it for better structure.
-
-#### ✅ Location:
-
-You can find or move the controller to:
-
-```
-app/Http/Controllers/Api/ApiModelController.php
-```
-
-This controller was generated using the `-mcr` flag:
-
-```bash
-php artisan make:controller ApiModelController -mcr
-```
-
-After creation, it was moved into the `Api` folder. You can either:
-
-* Keep the controller in the default `app/Http/Controllers` directory, **or**
-* Move it into `app/Http/Controllers/Api` for better project structure.
-
-> 🔁 If moved, update the **namespace** inside the controller:
+## 🧭 Request Validation (`TaskRequest.php`)
 
 ```php
-namespace App\Http\Controllers\Api;
+use IsValidRequest;
+
+public function authorize(): bool
+{
+    return true;
+}
+
+public function rules(): array
+{
+    return [
+        'name' => 'required',
+        'description' => 'nullable',
+        'status' => 'required|in:PENDING,IN_PROGRESS,COMPLETED',
+        'due_date' => 'required|date_format:Y-m-d',
+    ];
+}
 ```
-Then update any route references accordingly.
 
 ---
 
-## 📌 Add Helpers
+## 🧬 Trait (`IsValidRequest.php`)
 
-### 1. **Create Helpers File**
+```php
+namespace App\Traits;
+
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+
+trait IsValidRequest
+{
+    public function validationData()
+    {
+        try {
+            isApiRequestValidator($this);
+            return $this->all();
+        } catch (\Exception $e) {
+            throw new HttpResponseException(
+                response()->json(['status' => 0, 'message' => $e->getMessage()], 422)
+            );
+        }
+    }
+
+    public function failedValidation(Validator $validator
+```
+
+
+)
+{
+throw new HttpResponseException(
+response()->json(\[
+'status' => 0,
+'message' => \$validator->getMessageBag()->toArray(),
+'errors' => \$validator->errors(),
+], 422)
+);
+}
+}
+
+````
+
+---
+
+## 🧰 Controller Methods
+
+### 📥 Index
+
+```php
+public function index(Request $request, FilterModel $filterModel)
+{
+    try {
+        $data = $filterModel->handle($request, 100);
+        return successResponse('Showing All Data', $data);
+    } catch (\Exception $e) {
+        return errorResponse($e);
+    }
+}
+````
+
+### 📝 Store
+
+```php
+public function store(TaskRequest $request)
+{
+    try {
+        $data = $request->validated();
+        $data['created_by'] = $data['assigned_to'] = Auth::user()->id;
+        $allData = ModelName::create($data);
+        return successResponse('New Task has been Created', $allData);
+    } catch (\Exception $e) {
+        return errorResponse($e);
+    }
+}
+```
+
+### 🔍 Show / Edit
+
+```php
+public function show($id)
+{
+    try {
+        $taskData = ModelName::find($id);
+        if (empty($taskData)) {
+            throw new \Exception('Unable to Find This Task');
+        }
+
+        $taskData['url'] = route('api-task.update', $id);
+        $taskData['due_date'] = date('Y-m-d', strtotime($taskData->due_date));
+        $taskData->unsetRelation('assignedTo')->unsetRelation('createdBy');
+
+        unset($taskData->created_by, $taskData->assigned_to);
+
+        return successResponse('Open Modal', $taskData);
+    } catch (\Exception $e) {
+        return errorResponse($e);
+    }
+}
+
+public function edit($id)
+{
+    return $this->show($id);
+}
+```
+
+### 🔁 Update
+
+```php
+public function update(TaskRequest $request, string $id)
+{
+    try {
+        $taskData = ModelName::find($id);
+        if (empty($taskData)) {
+            throw new \Exception('Unable to Find This Task');
+        }
+
+        $taskData->update($request->validated());
+
+        return successResponse('This Task has been Updated', $taskData);
+    } catch (\Exception $e) {
+        return errorResponse($e);
+    }
+}
+```
+
+### ❌ Destroy
+
+```php
+public function destroy(Request $request)
+{
+    try {
+        ModelName::whereIn('id', explode(',', $request->ids))->delete();
+        return successResponse('This Task has been Destroyed');
+    } catch (\Exception $e) {
+        return errorResponse($e);
+    }
+}
+```
+
+---
+
+## ⚙️ Filter Action Class
+
+**`App\Actions\ModelApi\FilterModels.php`**
+
+```php
+namespace App\Actions\ModelApi;
+
+use App\Models\ModelName;
+
+class FilterModels
+{
+    public function handle($request, $dataAmount)
+    {
+        $taskData = ModelName::query();
+
+        if (! empty($request->status)) {
+            $taskData->where('status', $request->status);
+        }
+
+        if (! empty($request->searchName)) {
+            $taskData->where('name', 'like', '%' . $request->searchName . '%');
+        }
+
+        return $taskData->orderBy('due_date', 'ASC')->paginate($dataAmount);
+    }
+}
+```
+
+---
+
+## 🛠️ Helper File Setup
+
+### 🔧 1. Create `app/Helpers/helpers.php`
 
 ```bash
 touch app/Helpers/helpers.php
 ```
 
-### 2. **Add Functions**
-
-Add your custom functions from helpers file - Helpers/custom/ApiCustomResponse.php
+### ➕ 2. Include Logic
 
 ```php
 require_once 'custom/Validation.php';
 require_once 'custom/ApiCustomResponse.php';
 ```
 
-### 3. **Autoload in Composer**
-
-Edit `composer.json`:
+### 🔁 3. Register in `composer.json`
 
 ```json
 "autoload": {
-    // if any,
     "files": [
         "app/Helpers/helpers.php"
     ]
 }
 ```
 
-### 4. **Dump Autoload**
+### 🚀 4. Dump Autoload
 
 ```bash
 composer dump-autoload
@@ -535,107 +523,18 @@ composer dump-autoload
 
 ---
 
-### 🧱 CRUD Implementation
+## ✅ Sample JSON Response
 
-Inside your `ApiModelController`, you’ll have methods like:
-
-* `index()` – list all models
-* `store()` – create a new record
-* `show()` – view a specific model
-* `update()` – update a record
-* `destroy()` – delete a record
-
-Replace the **model name** and **column names** in the generated methods with your specific ones.
-
-> 🎯 This structure allows you to build full CRUD operations quickly with clean, testable code.
-
----
-
-### 🧩 (Optional) Using Action Classes
-
-To keep your controller clean and your business logic reusable, you can offload complex logic into **Action classes**.
-
-#### Example Structure:
-
-```
-app/Action/FilterModel/FilterModelAction.php
-```
-
-You can create an action class like `FilterModelAction`, and call it from your controller:
-
-```php
-$data = app(FilterModelAction::class)->handle($request);
-```
-
-> 💡 This pattern helps keep your controller methods **short, readable, and maintainable**.
-
-Feel free to rename the `FilterModel` folder and class based on your own resource.
-
----
-
-## ✅ Custom Form Request Validation
-
-Laravel's **Form Request** classes provide a clean way to handle validation.
-
-### 🛠 Generate a Request:
-
-```bash
-php artisan make:request Test
-```
-
-This creates a file in:
-
-```
-app/Http/Requests/Test.php
-```
-
-For your model, you might create something like:
-
-```
-app/Http/Requests/ModelNameRequest.php
-```
-
-### ✏️ Example Use:
-
-Update the rules inside the request:
-
-```php
-public function rules(): array
+```json
 {
-    return [
-        'name' => 'required|string|max:255',
-        'status' => 'in:PENDING,IN PROGRESS,COMPLETED',
-        'due_date' => 'required|date',
-    ];
+  "status": 1,
+  "message": "New Task has been Created",
+  "data": {
+    "id": 1,
+    "name": "Sample Task",
+    "due_date": "2025-07-14"
+  }
 }
 ```
 
-Then use this request in your controller:
-
-```php
-public function store(ModelNameRequest $request)
-{
-    // $request is already validated
-    Model::create($request->validated());
-}
-```
-
-> 🔐 This approach improves **security**, **code readability**, and **validation reuse**.
-
----
-
-## 🎨 Blade Integration (Frontend)
-
-Refer to the Blade files in your project that handle:
-
-* Form inputs
-* Modal popups
-* AJAX calls (already covered earlier)
-* Toastr notifications for feedback
-
-Your controller returns standard JSON responses which are handled by your front-end scripts to show modals or success messages.
-
-> 📂 Example views are located in `resources/views`.
-
----
 ---
