@@ -13,11 +13,11 @@ class ModelName extends Model
 
     protected $fillable = [
         'name',
-        'description',
-        'status',
-        'due_date',
-        'created_by',
-        'assigned_to'
+        // 'description',
+        // 'status',
+        // 'due_date',
+        // 'created_by',
+        // 'assigned_to'
     ];
 
     public function assignedTo()

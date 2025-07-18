@@ -1,220 +1,197 @@
 $(document).ready(function () {
 
+    // Configurable options (can be modified globally)
+    const config = {
+        formId: '#form',
+        modalId: '#form-modal',
+        titleSelector: '.modal-title',
+        urlInputId: '#url',
+        methodInputName: '_method',
+        submitBtnId: '#formSubmitBtn',
+        createBtnClass: '.create-btn',
+        editBtnClass: '.edit-btn',
+        deleteBtnClass: '.delete-btn',
+        checkItemClass: '.checkitem',
+        checkAllBoxId: '#check_all_box',
+        multipleDeleteBtnId: '#multiple_delete_btn'
+    };
 
-    editSuccess = function (data) {
+    // Success callback handlers
+    const handleCrudSuccess = {
+        edit: (data) => {
+            openModal(data);
+        },
+        formSubmit: (data) => {
+            // Handle form submission success
+            closeModal();
+            toastr.success(data.message);
+        },
+        delete: () => {
+            setTimeout(() => window.location.reload(), 400);
+        }
+    };
 
-    }
+    // Process AJAX success based on CRUD type
+    const processSuccessResponse = (data, crudType) => {
+        if (crudType in handleCrudSuccess) {
+            handleCrudSuccess[crudType](data);
+        }
+    };
 
-    formSuccess = function (data) {
+    // Handle AJAX error response
+    const handleErrorResponse = ($xhr, timeout) => {
+        const errorData = $xhr.responseJSON;
+        if (typeof errorData.message === "string") {
+            toastr.error('', errorData.message, { timeOut: timeout });
+        } else {
+            $.each(errorData.message, (key, message) => {
+                toastr.error('', message, { timeOut: timeout });
+            });
+        }
+    };
 
-    }
+    // Centralized AJAX function
+    const ajaxCall = (param) => {
+        const tostrTimeOut = 3000;
 
-    deleteSuccess = function () {
-        setTimeout(() => {
-            window.location.reload();
-        }, 400); // 100ms delay
-    }
-
-    // Dynamic Ajax Call
-    ajaxCall = function (param) {
-
-        // Pre defining values
-        var method = param.type;
-        var url = param.url;
-        var dataType = param.dataType;
-        var data = param.data;
-        var tostrTimeOut = 3000;
-
-        // Call Ajax Function
         $.ajax({
             headers: {
-                'Authorization': 'Bearer ' + $('meta[name="bearer-token"]').attr('content'), // Laravel bearer token,
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Laravel CSRF token
+                'Authorization': `Bearer ${$('meta[name="bearer-token"]').attr('content')}`,
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            type: method,
-            url: url,
-            dataType: dataType,
-            data: data,
-            success: function (response) {
-                response.tostrTimeOut = tostrTimeOut; // adding time(sec) to response
-                success(response); // Call success callback
+            type: param.type,
+            url: param.url,
+            dataType: param.dataType,
+            data: param.data,
+            success: (response) => {
+                response.tostrTimeOut = tostrTimeOut;
+                processSuccessResponse(response, param.crud);
             }
-        }).done(function (data, textStatus, jqXHR) {
-            // Process data, After received in data parameter
-            if (param.crud == 'edit') {
-                editSuccess(data);
-            }
-            else if (param.crud == 'formSubmit') {
-                formSuccess(data);
-            }
-            else if (param.crud == 'delete') {
-                deleteSuccess(data);
-            }
-            else { }
-        }).fail(function ($xhr) {
+        }).fail(($xhr) => handleErrorResponse($xhr, tostrTimeOut));
+    };
 
-            var errorData = $xhr.responseJSON; // Get Actual Json Response
-            if (typeof errorData.message == "string") {
-                toastr.error('', errorData.message, { timeOut: tostrTimeOut }); // toastr Error Messages
-                // $('.error-message').append(`<span class="alert alert-danger mt-1 p-1">` + errorData.message + `</span>`); // Appending Error Messages
-            }
-            else {
-                $.each(errorData.message, function (objKey, objValue) { // Finding Each Data
-                    toastr.error('', objValue, { timeOut: tostrTimeOut }); // toastr Error Messages
-                    // $('.' + objKey).append(`<p class="alert alert-danger mt-1 p-1">` + objValue + `</p>`); // Appending Valiadtion Messages For Each Input
-                });
-            }
-            $('.alert').fadeOut(param.time); // Fading Away Error Message after time(Sec)
-        });
-    }
+    // Modal open handler (Create/Edit)
+    const openModal = (response) => {
+        const $modal = $(config.modalId);
+        const $form = $(config.formId);
+        const $title = $modal.find(config.titleSelector);
 
-    // Close Modal
-    closeModal = function () {
-        // $('#form')[0].reset();
-        $('.modal-title').html("Create Form"); // Replace Value
-        $('#form').trigger('reset'); // Form Reset to empty
-        $('#url').val(''); // url set empty
-        $('input[name="_method"]').remove(); // remove input tag
-        $("#form-modal").modal('hide'); // Hide Modal
-    }
-
-    // Close Modal on Click
-    $(document).on('hidden.bs.modal', '#form-modal', function () {
-        closeModal();
-    });
-
-    // Open Modal For Create or Edit data
-    openModal = function (response) {
-
-        // As, it is a single form using for both type file Submit Event.
-        // so response.length defines if it has data object, then it's update form otherwise Create form
-        if (typeof (response) !== "string" && Object.keys(response).length > 0) {
-            $('.modal-title').html("Edit Form"); // Rename Modal Title
-            let data = response.data;
-            $.each(data, function (objKey, objValue) { // Finding/Assigning Each Data on Each Input
-                $('#' + objKey).find('option[value="${objValue}"]').attr('selected', 'selected').change();
-                $('#' + objKey).val(objValue); // Appending data for Each Input
+        if (typeof response !== "string" && Object.keys(response).length > 0) {
+            $title.text("Edit ");
+            $.each(response.data, (key, value) => {
+                const $field = $(`#${key}`);
+                if ($field.is('select')) {
+                    $field.val(value).change();
+                } else {
+                    $field.val(value);
+                }
             });
-
-            $('#form').append('<input type="hidden" name="_method" value="PUT">'); // Needed Put method to Update Form
+            if (!$form.find(`input[name="${config.methodInputName}"]`).length) {
+                $form.append(`<input type="hidden" name="${config.methodInputName}" value="PUT">`);
+            }
+        } else {
+            $(config.urlInputId).val(response);
+            $title.text("Add ");
         }
-        else {
-            $('#url').val(response);
-        }
 
-        $("#form-modal").modal('show'); // Show Modal Form
-    }
+        $modal.modal('show');
+    };
 
-    // Show Modal On Click
-    $(document).on('click', '.create-task', function () {
-        url = $(this).attr('data-url');
+    // Modal close handler (reset form)
+    const closeModal = () => {
+
+        const $form = $(config.formId);
+        const $modal = $(config.modalId);
+        const $title = $modal.find(config.titleSelector);
+
+        $title.text("Add ");
+        $form.trigger('reset');
+        $(config.urlInputId).val('');
+        $form.find(`input[name="${config.methodInputName}"]`).remove();
+
+        $modal.modal('hide');
+    };
+
+    // Event bindings
+    $(document).on('click', config.createBtnClass, function () {
+        const url = $(this).attr('data-url');
         openModal(url);
     });
 
-    
-    // Edit JS
-        // Edit/Show Data, Using Ajax
-        $(document).on('click', '.edit-task', function () {
-            var url = $(this).data('url'); // Get the delete URL
-            var param = {
-                type: 'GET',
-                url: url,
-                dataType: 'JSON',
-            }
-
-            ajaxCall(param); // Submit form Using Ajax
+    $(document).on('click', config.editBtnClass, function () {
+        ajaxCall({
+            type: 'GET',
+            url: $(this).data('url'),
+            dataType: 'JSON',
+            crud: 'edit'
         });
+    });
 
-        // Form Submit for Create/Update Using Ajax
-        $(document).on('click', '#formSubmitBtn', function (event) {
-            event.preventDefault();
-
-            var url = $('#url').val(); // Update/Create URL
-            var method = $('input[name="_method"]').val(); // "POST" Method Create Form
-            if (!method) {
-                method = $('#form').attr('method'); // "PUT" Method Update Form
-            }
-            var param = {
-                type: method,
-                url: url,
-                dataType: 'JSON',
-                data: $('#form').serialize(),
-                crud: 'formSubmit'
-            }
-
-            ajaxCall(param); // Submit form Using Ajax
+    $(document).on('click', config.submitBtnId, function (e) {
+        e.preventDefault();
+        ajaxCall({
+            type: $(`${config.formId} input[name="${config.methodInputName}"]`).val() || $(config.formId).attr('method'),
+            url: $(config.urlInputId).val(),
+            dataType: 'JSON',
+            data: $(config.formId).serialize(),
+            crud: 'formSubmit'
         });
+    });
 
-
-    /*
-    // Single delete data from table
-    // Form Submit for Delete Using Ajax
-    */
-    $(document).on('click', '.delete-btn', function () {
-        var id = $(this).data('id'); // Get the task ID
-        var url = $(this).data('url'); // Get the delete URL
+    $(document).on('click', config.deleteBtnClass, function () {
         if (confirm('Are you sure you want to delete this task?')) {
-            var param = {
+            ajaxCall({
                 type: 'DELETE',
-                url: url,
+                url: $(this).data('url'),
                 dataType: 'JSON',
-                data: {
-                    ids: id
-                }
-            }
-            ajaxCall(param); // Submit form Using Ajax
+                data: { ids: $(this).data('id') },
+                crud: 'delete'
+            });
             $(this).closest('tr').remove();
         }
     });
 
-    /*
-    //  open multiple delete button
-    */
-    $(".checkitem").change(function () {
-        if (this.checked) {
-            $('#multiple_delete_btn').removeClass('d-none');
-        }
-        else if ($(".table input[name='id']:checked").length < 1) {
-            $('#multiple_delete_btn').addClass('d-none');
-            $('#check_all_box').prop('checked', false);
-        }
+    $(config.checkItemClass).change(function () {
+        const checked = $(config.checkItemClass + ":checked").length > 0;
+        $(config.multipleDeleteBtnId).toggleClass('d-none', !checked);
+        $(config.checkAllBoxId).prop('checked', checked);
     });
 
-    // Check all boxes
-    $('#check_all_box').click(function (event) {
-        if (this.checked) {
-            $('.checkitem').each(function () {
-                this.checked = true;
-                $('#multiple_delete_btn').removeClass('d-none');
-            });
-        } else {
-            $('.checkitem').each(function () {
-                this.checked = false;
-                $('#multiple_delete_btn').addClass('d-none');
-            });
-        }
+    $(config.checkAllBoxId).click(function () {
+        const isChecked = $(this).is(':checked');
+        $(config.checkItemClass).prop('checked', isChecked);
+        $(config.multipleDeleteBtnId).toggleClass('d-none', !isChecked);
     });
 
-    $('#multiple_delete_btn').on('click', function (e) {
-        var url = $(this).data('url'); // Get the delete URL
-        let selctedIds = [];
-        $("input:checkbox[name=id]:checked").each(function () {
-            selctedIds.push($(this).val());
-        });
+    $(config.multipleDeleteBtnId).on('click', function () {
+        const selectedIds = $("input:checkbox[name=id]:checked").map(function () {
+            return $(this).val();
+        }).get();
 
-        if (confirm('Are you sure you want to delete this task?')) {
-            var param = {
+        if (confirm('Are you sure you want to delete these tasks?')) {
+            ajaxCall({
                 type: 'DELETE',
-                url: url,
+                url: $(this).data('url'),
                 dataType: 'JSON',
-                data: {
-                    ids: selctedIds
-                },
+                data: { ids: selectedIds },
                 crud: 'delete'
-            }
-
-            ajaxCall(param); // Submit form Using Ajax
-            // deleteSwalAlert(selctedIds); // Calling Custom created Function
+            });
         }
+    });
+
+    $(document).on('hidden.bs.modal', config.modalId, closeModal);
+});
+
+
+$(document).ready(function () {
+    $('#name').on('keyup', function () {
+        var name = $(this).val();
+        var slug = name
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, '') // remove invalid chars
+            .replace(/\s+/g, '_') // collapse whitespace and replace with -
+            .replace(/-+/g, '_'); // collapse multiple hyphens
+        $('#slug').val(slug);
     });
 });
