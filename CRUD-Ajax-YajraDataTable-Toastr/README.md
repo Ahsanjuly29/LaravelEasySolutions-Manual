@@ -23,14 +23,14 @@ laravel new TestProject
 
 ## 📘 Optional: Authentication with Laravel Breeze
 
-🔗 **Click Here (Link)** — to setup Laravel Breeze for authentication scaffolding.
+🔗 **Click Here (Link)** — to setup Laravel authentication scaffolding.
 
 ---
 
 ## 🛠️ Step 2: Create Model, Controller & Migration
 
 ```bash
-php artisan make:model ModelName -mcr --api
+php artisan make:model Company -mcr --api
 ```
 
 | Flag    | Description                             |
@@ -50,47 +50,92 @@ Set up AJAX-based CRUD using Blade + jQuery.
 
 ### 🧱 Master Layout (resources/views/master/app.blade.php)
 
-#### 🖼️ Head Section
+#### 🖼️ Head Section (make sure these files exists)
 
-```blade
+
+***CS files***
+
+```html
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="bearer-token" content="{{ session('loginToken' . auth()->user()?->id) }}">
+    <meta name="app-locale" content="{{ app()->getLocale() }}">
 
     <title>{{ config('app.name', 'Laravel App') }}</title>
+
+    {{-- tab icon --}}
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
 
-    {{-- CSS --}}
+    {{-- Css --}}
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/pagination.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/buttons.dataTables.min.css') }}">
+
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap5.min.css') }}">
+
+    <!-- Toastr CSS if you use toastr notifications -->
     <link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
+
+    <!-- Your icon/font CSS if needed -->
     <link rel="stylesheet" href="{{ asset('assets/css/all.min.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('assets/css/buttons.bootstrap5.min.css') }}">
+
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    {{-- inline css Files  --}}
     @yield('custom-css')
 </head>
 
 @yield('main-body')
 ```
 
-#### 📜 Script Section
+***📜 JS files***
 
-```blade
+```html
+<!-- jQuery -->
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
+<!-- select2 -->
+<script src="{{ asset('assets/js/select2.min.js') }}"></script>
+
+<!-- Bootstrap JS -->
 <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+
+<!-- DataTables core -->
 <script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
+
+<!-- DataTables Bootstrap 5 integration -->
+<script src="{{ asset('assets/js/dataTables.bootstrap5.min.js') }}"></script>
+
+<!-- Optional: DataTables Buttons extension if needed -->
 <script src="{{ asset('assets/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('assets/js/buttons.bootstrap5.min.js') }}"></script>
 <script src="{{ asset('assets/js/jszip.min.js') }}"></script>
+
+<script src="{{ asset('assets/js/pdfmake.min.js') }}"></script>
+<script src="{{ asset('assets/js/vfs_fonts.js') }}"></script>
+
 <script src="{{ asset('assets/js/buttons.html5.min.js') }}"></script>
 <script src="{{ asset('assets/js/buttons.print.min.js') }}"></script>
-<script src="{{ asset('assets/js/toastr.min.js') }}"></script>
-<script src="{{ asset('assets/js/ajax-jquery-crud.js') }}"></script>
 
+<!-- Toastr for notifications -->
+<script src="{{ asset('assets/js/toastr.min.js') }}"></script>
+
+<!-- custom JS files -->
+<script src="{{ asset('assets/js/ajax-dataTable.js') }}"></script>
+<script src="{{ asset('assets/js/ajax-crud.js') }}"></script>
+
+
+{{-- inline Js Files  --}}
 @yield('custom-js')
 ```
 
@@ -110,18 +155,8 @@ Set up AJAX-based CRUD using Blade + jQuery.
 @endsection
 
 @section('custom-js')
-<script type="text/javascript">
-    $(document).ready(function() {
-        success = function(data) {
-            if (data.message == 'Open Modal') {
-                openModal(data);
-            } else {
-                toastr.success(data.message);
-                closeModal();
-            }
-        }
-    });
-</script>
+
+
 @endsection
 ```
 
@@ -129,73 +164,151 @@ Set up AJAX-based CRUD using Blade + jQuery.
 
 ### 🧩 Contents inside `main-body`
 
-#### 🔘 Create Button
 
-```blade
-<button type="button" class="border border-primary w-100 btn btn-primary create-btn"
-    data-url="{{ route('api-model-name.store') }}">
-    Create
-</button>
+---
+
+# 📘 README: JavaScript Configuration for Dynamic CRUD DataTable
+
+---
+
+## 📦 Global Setup inside blade file
+
+add edit/show and delete URLs dynamically generated from Laravel's named routes:
+
+```js
+const baseShowUrl = "{{ route('company-api.show', ':id') }}";
+const baseDestroyUrl = "{{ route('company-api.destroy', ':id') }}";
 ```
 
-#### 📊 DataTable View
+These are templates for RESTful **Show** and **Delete** operations. it will `.replace(':id', yourId)` with the actual ID.
 
-```blade
-<div class="table-responsive">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th class="text-center">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="check_all_box" />
-                    </div>
-                </th>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($allData as $item)
-                <tr>
-                    <td class="text-center">
-                        <div class="form-check">
-                            <input class="form-check-input checkitem" type="checkbox"
-                                value="{{ $item->id }}" name="id" />
-                        </div>
-                    </td>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->name ?? '--' }}</td>
-                    <td>
-                        <div class="d-flex">
-                            <button class="btn btn-sm btn-outline-primary me-1 edit-btn"
-                                data-url="{{ route('api-model-name.edit', $item->id) }}">Edit</button>
-                            <button class="btn btn-sm btn-outline-danger ms-1 delete-btn"
-                                data-url="{{ route('api-model-name.destroy', $item->id) }}"
-                                data-id="{{ $item->id }}">
-                                Delete
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            @endforeach
-            <tr>
-                <td colspan="13">
-                    <button id="multiple_delete_btn" class="btn btn-xs btn-outline-danger mr-2 d-none"
-                        type="submit" data-url="{{ route('api-model-name.destroy', 1) }}">
-                        Delete all
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="100">{!! $allData->render() !!}</td>
-            </tr>
-        </tfoot>
-    </table>
-</div>
+---
+
+## 🚀 How to Use in Your Blade Template
+
+## 🛠 Global Configuration Object for AJAX operation
+
+The `window.config` object defines **selectors and class names** used across multiple CRUD operations.
+
+```js
+    window.config = {
+        formId: '#form',                         // Use this as the ID for your <form id="form">
+        modalId: '#form-modal',                  // Use this as the ID for your form modal     <div class="modal" id="form-modal">
+        titleSelector: '.modal-title',           // Use this as the class for modal title <h5 class="modal-title">
+        urlInputId: '#url',                      // Use this as the ID for hidden input <input type="hidden" id="url">
+        methodInputName: '_method',              // Use this as the name for HTTP method input <input name="_method">
+        submitBtnId: '#formSubmitBtn',           // Use this as the ID for form submit button <button id="formSubmitBtn">
+        createBtnClass: '.create-btn',           // Use this as the class for "Create New" button <button class="create-btn">
+        editBtnClass: '.edit-btn',               // Use this as the class for edit buttons <button class="edit-btn">
+        deleteBtnClass: '.delete-btn',           // Use this as the class for delete buttons <button class="delete-btn">
+        checkItemClass: '.checkitem',            // Use this as the class for row checkboxes <input class="checkitem">
+        checkAllBoxId: '#check_all_box',         // Use this as the ID for "select all" checkbox <input id="check_all_box">
+        multipleDeleteBtnId: '#multiple_delete_btn' // Use this as the ID for bulk delete button <button id="multiple_delete_btn">
+    };
 ```
+> 🔄 include these elements in your HTML for functionality.
+
+---
+
+## 📊 DataTable Configuration
+
+The `DataTableManager.init({...})` call initializes a **feature-rich DataTable** with:
+
+* AJAX loading
+* CRUD action buttons
+* Export buttons (Copy, Print, Excel, PDF)
+* Bulk deletion
+
+### ✅ Required HTML
+
+Your table must look like this:
+
+```html
+<table id="data_table"
+       data-url="{{ route('your-data-fetch-route') }}"
+       data-csrf="{{ csrf_token() }}"
+       data-bulk-delete-url="{{ route('your.bulk.delete.route') }}">
+</table>
+```
+
+### 📁 Table Columns Setup
+
+```js
+columns: [
+    { data: null, name: 'checkbox', render: ..., className: "text-center" },
+    { data: null, name: 'serial_number', render: ..., className: "text-center" },
+    { data: 'name', name: 'name' },
+    { data: 'slug', name: 'slug' },
+    { data: null, render: ..., orderable: false }
+]
+```
+
+* **Checkbox column**: Enables multi-row selection
+* **Serial number**: Auto-incremented row number
+* **Name / Slug**: Actual data fields
+* **Actions**: Edit/Delete buttons with proper `data-url`
+
+> 🔗 The `data-url` attributes are dynamically populated using `baseShowUrl` and `baseDestroyUrl`.
+
+---
+
+## 📁 Export Options
+
+```js
+exportColumns: [1, 2, 3],
+buttons: [
+    { extend: 'copy' },
+    { extend: 'print' },
+    { extend: 'excel' },
+    { extend: 'pdfHtml5' }
+]
+```
+These allow users to export visible data in various formats. Columns 1, 2, 3 refer to `serial_number`, `name`, and `slug`.
+
+***✅ To get full code see views/company/index.blade.php***
+
+---
+
+## 🔄 Select2 with AJAX Integration
+
+### 🔧 How It Works
+
+All elements with `.select2-ajax` will be initialized with AJAX-based searching from a remote URL.
+
+```js
+const initSelect2WithAjaxCall = ($context) => {
+    $context.find('.select2-ajax').each(function() {
+        const $select = $(this);
+        const url = $select.data('url');
+        ...
+    });
+};
+```
+
+### ✅ Required HTML Example
+
+```html
+<select class="select2-ajax"
+        data-url="{{ route('api.dropdown.options') }}"
+        data-placeholder="Select a company">
+</select>
+```
+
+### 💡 Features
+
+* Lazy loads options via AJAX
+* Uses a placeholder
+* Avoids re-initialization
+
+> ⚠ Ensure `ajaxCall()` is defined globally to support this request. It should trigger the `success()` callback on success.
+
+---
+
+1. **Add Required HTML Elements**
+
+   * Table with correct `data-` attributes
+   * Modal and form with matching `#form`, `#form-modal`, etc.
+   * Select inputs with `.select2-ajax` class and `data-url`
 
 ---
 
