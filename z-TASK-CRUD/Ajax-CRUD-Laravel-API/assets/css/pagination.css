@@ -1,0 +1,79 @@
+.pagination {
+    justify-content: center;
+    margin: 10px 0;
+    /* Reduced margin */
+    flex-wrap: wrap;
+}
+
+.racing-pagination {
+    background: #222;
+    /* Dark background for a racing feel */
+    border-radius: 8px;
+    /* Slightly smaller border radius */
+    padding: 5px;
+    /* Reduced padding */
+}
+
+.page-item {
+    margin: 0 3px;
+    /* Reduced margin */
+}
+
+.page-link {
+    border-radius: 4px;
+    /* Smaller border radius */
+    padding: 8px 10px;
+    /* Smaller padding */
+    color: #fff;
+    /* Text color */
+    background-color: #007bff;
+    /* Default background */
+    border: 1px solid #007bff;
+    /* Border color */
+    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Audiowide', cursive;
+    /* Racing font */
+    font-size: 0.9rem;
+    /* Smaller font size */
+    text-align: center;
+    /* Center text */
+}
+
+.page-link i {
+    margin-right: 4px;
+    /* Space between icon and text */
+    font-size: 0.9rem;
+    /* Smaller icon size */
+}
+
+.page-link:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+}
+
+.page-item.active .page-link {
+    background-color: #28a745;
+    /* Active item background */
+    color: #fff;
+}
+
+.page-item.disabled .page-link {
+    color: #6c757d;
+    /* Disabled link color */
+    background-color: #444;
+    /* Darker background for disabled */
+}
+
+@media (max-width: 576px) {
+    .page-link {
+        padding: 6px 8px;
+        /* Smaller padding on mobile */
+        font-size: 0.8rem;
+        /* Slightly smaller font */
+    }
+
+    .page-item {
+        margin: 0 2px;
+        /* Further reduce margin on mobile */
+    }
+}
