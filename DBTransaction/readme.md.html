@@ -1,2 +1,0 @@
-
-<blockquote>DB::beginTransaction();</blockquote>

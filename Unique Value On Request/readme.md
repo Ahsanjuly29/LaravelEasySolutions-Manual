@@ -1,58 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
+# 🛡️ Unique Validation in Laravel (Request-Based)
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unique Maker</title>
+This guide explains how to **validate unique data** (like an email) in Laravel when using **Form Requests** — especially when you want the uniqueness to depend on more than one column.
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+## 🧪 Scenario
 
-    <style>
-        body {
-            text-transform: capitalize;
-        }
+You have a table called `agency_customers`, and you want to make sure that:
 
-        pre {
-            margin: 5px;
-        }
-    </style>
-</head>
+* The **email** is unique **per agency** (`agency_id`).
+* The validation works for both **Create** and **Update** requests.
 
-<body>
-    <div style="margin: 0 auto">
-        <h4>How to validate Unique data on Request Laravel</h4>
-        <blockquote>
-            <p>While Create</p>
-            <pre>
-                'email' => ['nullable', 'string','max:249', 
-                Rule::unique('agency_customers')
-                ->where(function ($query) use($email, $agencyId) {
-                    return $query->where([
-                        'email' => $email,
-                        'agency_id' => $agencyId
-                    ]);
-                });
-            </pre>
+---
 
-            <p>While Update</p>
-            <pre>
-                'email' => ['nullable', 'string','max:249', Rule::unique('agency_customers')->ignore($this->id)
-                ->where(function ($query) use($email, $agencyId)
-                {
-                    return $query->where([
-                        'email' => $email,
-                        'agency_id' => $agencyId
-                    ]);
-                }),
-              ],                
-            </pre>
-        </blockquote>
-    </div>
+## ✅ While Creating
 
-</body>
+Use this rule inside your `FormRequest`:
 
-</html>
+```php
+'email' => [
+    'nullable',
+    'string',
+    'max:249',
+    Rule::unique('agency_customers')->where(function ($query) use($email, $agencyId) {
+        return $query->where([
+            'email' => $email,
+            'agency_id' => $agencyId
+        ]);
+    }),
+],
+```
+
+### ✔️ What it does:
+
+Checks if there's **any other customer** with the **same email and agency ID**. If yes, it will **fail the validation**.
+
+---
+
+## 🔁 While Updating
+
+Use this rule:
+
+```php
+'email' => [
+    'nullable',
+    'string',
+    'max:249',
+    Rule::unique('agency_customers')->ignore($this->id)->where(function ($query) use($email, $agencyId) {
+        return $query->where([
+            'email' => $email,
+            'agency_id' => $agencyId
+        ]);
+    }),
+],
+```
+
+### ✔️ What it does:
+
+* Ignores the current record (`$this->id`) — so it doesn’t validate against itself.
+* Still ensures **no other record** has the same **email + agency\_id**.
+
+---
+
+## 📦 Requirements
+
+Make sure you import this at the top of your Form Request:
+
+```php
+use Illuminate\Validation\Rule;
+```
+
+---
+
+## 👀 Notes
+
+* `nullable`: allows the field to be empty.
+* Use `use($email, $agencyId)` to pass the current values into the query.
+* This is very useful for **multi-tenant applications** where uniqueness is scoped per user, company, or agency.
+
+---

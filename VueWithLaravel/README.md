@@ -1,1 +1,0 @@
-# Vue-with-Laravel-EasySolution

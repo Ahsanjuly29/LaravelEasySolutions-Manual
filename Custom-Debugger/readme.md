@@ -1,5 +1,5 @@
 <a href="https://ahsanjuly29.github.io/LaravelEasySolutions/Adding%20Custom%20Debugger%20For%20more%20Information%20Laravel/">
-	https://ahsanjuly29.github.io/LaravelEasySolutions/Adding-Custom-Debugger-For-more-Information-Laravel/
+	https://ahsanjuly29.github.io/LaravelEasySolutions/Custom-Debugger/
 </a>
 <div style="margin:0 auto; text-align:center; text-transform:capitalize;">
 	<h2>How To Add Debugger In Laravel ? <span>How To See Queries Count In Laravel ?</span></h2>

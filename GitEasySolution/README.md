@@ -1,2 +1,0 @@
-# Git-EasySolution
-# Git-EasySolution

@@ -23,7 +23,10 @@ laravel new TestProject
 
 ## 📘 Optional: Authentication with Laravel Breeze
 
-🔗 **Click Here (Link)** — to setup Laravel authentication scaffolding.
+You can easily set up Laravel authentication scaffolding **LINK**.
+
+🔗 [Click here to set it up](https://github.com/Ahsanjuly29/LaravelEasySolutions-Manual/tree/main/ApiAuthentications)
+
 
 ---
 
