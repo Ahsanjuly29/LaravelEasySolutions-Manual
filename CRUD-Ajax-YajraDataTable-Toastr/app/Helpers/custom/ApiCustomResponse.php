@@ -27,7 +27,7 @@ if (! function_exists('errorResponse')) {
         } else {
             return response()->json([
                 'status' => 0,
-                'message' => $e->getMessage().'. Line: '.$e->getLine().'. File: '.$e->getFile(),
+                'message' => $e->getMessage() . '. Line: ' . $e->getLine() . '. File: ' . $e->getFile(),
                 'data' => [],
             ], $code);
         }

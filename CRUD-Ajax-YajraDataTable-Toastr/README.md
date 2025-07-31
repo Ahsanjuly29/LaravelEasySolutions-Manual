@@ -146,7 +146,7 @@ Set up AJAX-based CRUD using Blade + jQuery.
 ```blade
 @extends('master.app')
 
-@include('ajax.form-modal')
+@include('company.form-modal')
 
 @section('custom-css')
 @endsection
@@ -171,21 +171,6 @@ Set up AJAX-based CRUD using Blade + jQuery.
 
 ---
 
-## 📦 Global Setup inside blade file
-
-add edit/show and delete URLs dynamically generated from Laravel's named routes:
-
-```js
-const baseShowUrl = "{{ route('company-api.show', ':id') }}";
-const baseDestroyUrl = "{{ route('company-api.destroy', ':id') }}";
-```
-
-These are templates for RESTful **Show** and **Delete** operations. it will `.replace(':id', yourId)` with the actual ID.
-
----
-
-## 🚀 How to Use in Your Blade Template
-
 ## 🛠 Global Configuration Object for AJAX operation
 
 The `window.config` object defines **selectors and class names** used across multiple CRUD operations.
@@ -207,6 +192,49 @@ The `window.config` object defines **selectors and class names** used across mul
     };
 ```
 > 🔄 include these elements in your HTML for functionality.
+
+---
+
+## 🔄 Select2 with AJAX Integration
+
+### 🔧 How It Works
+
+All elements with `.select2-ajax` will be initialized with AJAX-based searching from a remote URL.
+
+```js
+const initSelect2WithAjaxCall = ($context) => {
+    $context.find('.select2-ajax').each(function() {
+        const $select = $(this);
+        const url = $select.data('url');
+        ...
+    });
+};
+```
+
+### ✅ Required HTML Example
+
+```html
+<select class="select2-ajax"
+        data-url="{{ route('api.dropdown.options') }}"
+        data-placeholder="Select a company">
+</select>
+```
+
+### 💡 Features
+
+* Lazy loads options via AJAX
+* Uses a placeholder
+* Avoids re-initialization
+
+> ⚠ Ensure `ajaxCall()` is defined globally to support this request. It should trigger the `success()` callback on success.
+
+---
+
+1. **Add Required HTML Elements**
+
+   * Table with correct `data-` attributes
+   * Modal and form with matching `#form`, `#form-modal`, etc.
+   * Select inputs with `.select2-ajax` class and `data-url`
 
 ---
 
@@ -269,46 +297,16 @@ These allow users to export visible data in various formats. Columns 1, 2, 3 ref
 
 ---
 
-## 🔄 Select2 with AJAX Integration
+## 📦 Global Setup inside blade file
 
-### 🔧 How It Works
-
-All elements with `.select2-ajax` will be initialized with AJAX-based searching from a remote URL.
+add edit/show and delete URLs dynamically generated from Laravel's named routes:
 
 ```js
-const initSelect2WithAjaxCall = ($context) => {
-    $context.find('.select2-ajax').each(function() {
-        const $select = $(this);
-        const url = $select.data('url');
-        ...
-    });
-};
+const baseShowUrl = "{{ route('company-api.show', ':id') }}";
+const baseDestroyUrl = "{{ route('company-api.destroy', ':id') }}";
 ```
 
-### ✅ Required HTML Example
-
-```html
-<select class="select2-ajax"
-        data-url="{{ route('api.dropdown.options') }}"
-        data-placeholder="Select a company">
-</select>
-```
-
-### 💡 Features
-
-* Lazy loads options via AJAX
-* Uses a placeholder
-* Avoids re-initialization
-
-> ⚠ Ensure `ajaxCall()` is defined globally to support this request. It should trigger the `success()` callback on success.
-
----
-
-1. **Add Required HTML Elements**
-
-   * Table with correct `data-` attributes
-   * Modal and form with matching `#form`, `#form-modal`, etc.
-   * Select inputs with `.select2-ajax` class and `data-url`
+These are templates for RESTful **Show** and **Delete** operations. it will `.replace(':id', yourId)` with the actual ID.
 
 ---
 
@@ -317,17 +315,17 @@ const initSelect2WithAjaxCall = ($context) => {
 ### 📄 Web Routes (`routes/web.php`)
 
 ```php
-Route::middleware('auth')->get('/ajax-crud', function () {
-    return view('ajax.index', [
-        'allData' => ModelName::orderBy('id', 'DESC')->paginate(10)
+Route::middleware('auth')->get('/company', function () {
+    return view('company.index', [
+        'allData' => Company::orderBy('id', 'DESC')->paginate(10)
     ]);
-});
+})->name('company.index');
 ```
 
 ### 🔗 API Routes (`routes/api.php`)
 
 ```php
-Route::middleware(['auth:sanctum'])->resource('api-model-name', ModelNameController::class);
+Route::middleware(['auth:sanctum'])->resource('api-company-data', ModelNameController::class);
 ```
 
 > 🧱 **Laravel 12 Note:**
@@ -342,7 +340,7 @@ php artisan install:api
 ## 🧬 Migration Columns (Modify as Needed)
 
 ```php
-Schema::create('models', function (Blueprint $table) {
+Schema::create('companies', function (Blueprint $table) {
     $table->id();
     $table->string('name');
     $table->timestamps();
@@ -366,7 +364,7 @@ protected $guarded = ['id'];
 ```php
 public function relationshipCallerName()
 {
-    return $this->belongsTo(Model::class, 'foreign_key', 'primary_key');
+    return $this->belongsTo(Company::class, 'foreign_key', 'primary_key');
 }
 ```
 
@@ -647,10 +645,15 @@ composer dump-autoload
 ```json
 {
   "status": 1,
-  "message": "New Task has been Created",
+  "message": "New company has been created",
   "data": {
     "id": 1,
-    "name": "Sample Task",
+    "name": "company 1",
+    "due_date": "2025-07-14"
+  },
+  "data": {
+    "id": 2,
+    "name": "company 2",
     "due_date": "2025-07-14"
   }
 }
