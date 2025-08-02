@@ -86,6 +86,8 @@ php artisan serve
     ---
     ---
 
+
+change this all later 
 ## ✅ Session-Based Authentication (Email/Password)
 
 ### Setup (Laravel Breeze)
