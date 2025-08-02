@@ -1,4 +1,90 @@
- ---
+
+---
+
+## 🚀 Setup: Laravel 12 + Sanctum + Breeze (React) – Stateful SPA Auth
+
+### 1. **Create Laravel 12 Project(if not exist)**
+
+```bash
+composer create-project laravel/laravel example-app
+cd example-app
+```
+
+### 2. **Install Sanctum**
+
+```bash
+composer require laravel/sanctum
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+```
+
+### 3. **Install Breeze (React UI)**
+
+```bash
+composer require laravel/breeze --dev
+php artisan breeze:install react
+npm install && npm run dev
+php artisan migrate
+```
+
+This gives built-in login/register UI via React.
+
+### 4. **Configure `.env`**
+
+```env
+SESSION_DRIVER=cookie
+SESSION_DOMAIN=.example.com
+SANCTUM_STATEFUL_DOMAINS=example.com
+```
+
+### 5. **Update Sanctum Config (`config/sanctum.php`)**
+
+```php
+'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'example.com')),
+'expiration' => null,
+```
+
+### 6. **Register Middleware in Bootstrap**
+
+Laravel 12 uses `bootstrap/app.php` with middleware groups — no need to edit `Kernel.php`:
+
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->api(prepend: [
+        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+    ]);
+});
+```
+install api if not exist
+
+```bash
+php artisan install:api
+```
+
+This ensures SPA requests (same-domain) use session cookies.
+
+### 7. **Define Protected API Routes (`routes/api.php`)**
+
+```php
+use Illuminate\Http\Request;
+
+Route::middleware('auth:sanctum')->group(function () {
+  Route::get('/user', fn(Request $r) => $r->user());
+  Route::get('/users', fn() => \App\Models\User::all());
+});
+```
+
+### 8. **Serve Your App**
+
+```bash
+php artisan serve
+```
+## Done(SPA Stateful setup authentication)
+
+
+    ---
+    ---
+    ---
 
 ## ✅ Session-Based Authentication (Email/Password)
 
