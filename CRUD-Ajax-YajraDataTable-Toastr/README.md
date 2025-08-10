@@ -1,4 +1,44 @@
 
+## 6. jQuery AJAX with Bearer Token
+
+```blade
+<meta name="access-token" content="{{ auth()->user()?->currentAccessToken()?->plainTextToken }}">
+```
+
+```js
+let token = $('meta[name="access-token"]').attr('content');
+
+$.ajaxSetup({
+    headers: {
+        'Authorization': 'Bearer ' + token,
+        'Accept': 'application/json'
+    }
+});
+
+$.get('/api/posts', function(posts) {
+    console.log(posts);
+});
+```
+
+> Or store token in `localStorage/sessionStorage` and use globally in JS.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 
 # 📚 Laravel CRUD by AJAX, Yajra DataTables & Toastr Alerts
