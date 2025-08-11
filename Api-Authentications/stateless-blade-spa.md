@@ -75,7 +75,8 @@ php artisan migrate
 // Generate a personal access token for the authenticated user
 $token = $user->createToken('web-token')->plainTextToken;
 
-// You can store this token in cookies, cache, or return it in a response
+// Store this token in cookies or cache. for api response can return it in a response JSON fornat
+
 ```
 
 ### Return token in API response (example):

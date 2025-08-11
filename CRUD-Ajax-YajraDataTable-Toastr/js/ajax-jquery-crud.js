@@ -194,4 +194,48 @@ $(document).ready(function () {
             .replace(/-+/g, '_'); // collapse multiple hyphens
         $('#slug').val(slug);
     });
+
+
+    const initSelect2WithAjaxCall = ($context) => {
+        $context.find('.select2-ajax').each(function () {
+            const $select = $(this);
+            const url = $select.data('url');
+            const placeholder = $select.data('placeholder') || 'Select';
+            const minimumInputLength = $select.data('minlength') || 1;
+            const idField = $select.data('id-field') || 'id';
+            const textField = $select.data('text-field') || 'name';
+
+            $select.select2({
+                theme: 'bootstrap4',
+                placeholder: placeholder,
+                allowClear: true,
+                minimumInputLength: minimumInputLength,
+                ajax: {
+                    transport: function (params, success, failure) {
+                        ajaxCall({
+                            type: 'GET',
+                            url: url,
+                            dataType: 'JSON',
+                            data: params.data,
+                            successCallback: success,
+                            errorCallback: failure
+                        });
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: (data.items || []).map(item => ({
+                                id: item[idField],
+                                text: item[textField]
+                            }))
+                        };
+                    },
+                    delay: 250,
+                    cache: true
+                }
+            });
+        });
+    };
+
 });
+
+

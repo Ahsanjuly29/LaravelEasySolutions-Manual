@@ -39,33 +39,30 @@ $.get('/api/posts', function(posts) {
 
 
 
----
 
-# 📚 Laravel CRUD by AJAX, Yajra DataTables & Toastr Alerts
+# 📚 Laravel CRUD using AJAX, Toastr Alerts
 
 Full-stack setup using Laravel API Resource Controllers, Blade Views, AJAX-based front-end, Yajra DataTables, and Toastr for notifications.
 
 ---
 
-## ⚙️ Step 1: Install Laravel
+## ⚙️ Optional 1: Install Laravel(if making new project)
 
 ```bash
 composer create-project --prefer-dist laravel/laravel myproject
 ```
-
 or
-
 ```bash
 laravel new TestProject
 ```
 
 ---
 
-## 📘 Optional: Authentication with Laravel Breeze
+## 📘 Optional 2: Authentication with Laravel Breeze
 
-You can easily set up Laravel authentication scaffolding **LINK**.
+authentication scaffolding **LINK**.
 
-🔗 [Click here to set it up](https://github.com/Ahsanjuly29/LaravelEasySolutions-Manual/tree/main/ApiAuthentications)
+🔗 [Click here for details](hhttps://github.com/Ahsanjuly29/LaravelEasySolutions-Manual/blob/main/Api-Authentications)
 
 
 ---
@@ -87,13 +84,13 @@ php artisan make:model Company -mcr --api
 
 ## 🎨 Step 3: View Files & Frontend Setup
 
-Set up AJAX-based CRUD using Blade + jQuery.
+Set up your template(bootstrap or any html, css template). common base then accodring to page
 
 ---
 
 ### 🧱 Master Layout (resources/views/master/app.blade.php)
 
-#### 🖼️ Head Section (make sure these files exists)
+#### 🖼️ Head Section (add these common files atleast)
 
 
 ***CS files***
@@ -119,9 +116,6 @@ Set up AJAX-based CRUD using Blade + jQuery.
     {{-- Css --}}
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
-
-    <!-- DataTables Bootstrap 5 CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/dataTables.bootstrap5.min.css') }}">
 
     <!-- Toastr CSS if you use toastr notifications -->
     <link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
@@ -153,28 +147,10 @@ Set up AJAX-based CRUD using Blade + jQuery.
 <!-- Bootstrap JS -->
 <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
 
-<!-- DataTables core -->
-<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
-
-<!-- DataTables Bootstrap 5 integration -->
-<script src="{{ asset('assets/js/dataTables.bootstrap5.min.js') }}"></script>
-
-<!-- Optional: DataTables Buttons extension if needed -->
-<script src="{{ asset('assets/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('assets/js/buttons.bootstrap5.min.js') }}"></script>
-<script src="{{ asset('assets/js/jszip.min.js') }}"></script>
-
-<script src="{{ asset('assets/js/pdfmake.min.js') }}"></script>
-<script src="{{ asset('assets/js/vfs_fonts.js') }}"></script>
-
-<script src="{{ asset('assets/js/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('assets/js/buttons.print.min.js') }}"></script>
-
 <!-- Toastr for notifications -->
 <script src="{{ asset('assets/js/toastr.min.js') }}"></script>
 
-<!-- custom JS files -->
-<script src="{{ asset('assets/js/ajax-dataTable.js') }}"></script>
+<!-- Custom made Crud through AJAX -->
 <script src="{{ asset('assets/js/ajax-crud.js') }}"></script>
 
 
@@ -199,18 +175,88 @@ Set up AJAX-based CRUD using Blade + jQuery.
 
 @section('custom-js')
 
-
 @endsection
 ```
 
 ---
-
 ### 🧩 Contents inside `main-body`
-
-
 ---
 
-# 📘 README: JavaScript Configuration for Dynamic CRUD DataTable
+## 📊 Table Configuration
+
+* AJAX loading
+* CRUD action buttons
+* Export buttons (Copy, Print, Excel, PDF)
+* Bulk deletion
+
+### ✅ Required HTML
+
+Your table must look like this:
+
+```blade
+
+    <button type="button"
+        class="nav-link border border-primary w-100 btn btn-primary create-task"
+        data-url="{{ route('api-task.store') }}">
+        Create
+    </button>
+    <table data-url="{{ route('your-data-fetch-route') }}" data-csrf="{{ csrf_token() }}"
+        data-bulk-delete-url="{{ route('api-company-data.destroy', 0) }}">
+        <thead>
+            <th class="text-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="" id="check_all_box" />
+                </div>
+            </th>
+            ...
+            ...
+            ...
+            <th>Action</th>
+        </thead>
+
+        <tbody>
+            @foreach ($allData as $item)
+                <tr>
+                    <td class="text-center">
+                        <div class="form-check">
+                            <input class="form-check-input checkitem" type="checkbox" value="{{ $item->id }}"
+                                name="id" />
+                        </div>
+                    </td>
+                    ...
+                    ...
+                    ...
+                    <td>
+                        <div class="d-flex">
+                            <button class="btn btn-sm btn-outline-primary me-1 edit-task"
+                                data-url="{{ route('api-company-data.edit', $item->id) }}"> Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger ms-1 delete-btn"
+                                data-url="{{ route('api-company-data.destroy', $item->id) }}" data-id="{{ $item->id }}">
+                                Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+            <tr>
+                <td colspan="13">
+                    <button id="multiple_delete_btn" class="btn btn-xs btn-outline-danger mr-2 d-none" type="submit"
+                        data-url="{{ route('api-task.destroy', 0) }}">
+                        Delete all
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="100">
+                    {!! $tasks->render() !!}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+```
 
 ---
 
@@ -219,6 +265,7 @@ Set up AJAX-based CRUD using Blade + jQuery.
 The `window.config` object defines **selectors and class names** used across multiple CRUD operations.
 
 ```js
+    // Ajax Configaraton 
     window.config = {
         formId: '#form',                         // Use this as the ID for your <form id="form">
         modalId: '#form-modal',                  // Use this as the ID for your form modal     <div class="modal" id="form-modal">
@@ -234,122 +281,74 @@ The `window.config` object defines **selectors and class names** used across mul
         multipleDeleteBtnId: '#multiple_delete_btn' // Use this as the ID for bulk delete button <button id="multiple_delete_btn">
     };
 ```
-> 🔄 include these elements in your HTML for functionality.
+
+```blade
+    <!-- The Modal -->
+    <div class="modal" id="form-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Form</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="card-body">
+                        <form id="form" method="POST">
+                            <div class="row">
+                                <div class="col-sm-4 mt-1 ">
+                                    <input type="text" class="form-control" placeholder="Enter name" id="name"
+                                        name="name">
+                                </div>
+                                <div class="col-sm-4 mt-1 ">
+                                    <select
+                                        class="select2-ajax form-select"
+                                        name="status" id="status">
+                                        <option value="PENDING">PENDING</option>
+                                        <option value="IN_PROGRESS">IN PROGRESS</option>
+                                        <option value="COMPLETED">COMPLETED</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Add hidden url input for create/Update form -->
+                            <input type="hidden" id="url" value="">
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-outline-primary" id="formSubmitBtn">Submit</button>
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal"
+                        id="formReset">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+```
+
 
 ---
 
-## 🔄 Select2 with AJAX Integration
+## 🔄 Dynamic Select2 with AJAX Integration(if needed)
 
-### 🔧 How It Works
+When using Select2 with AJAX, structure your `<select>` element like this:
 
-All elements with `.select2-ajax` will be initialized with AJAX-based searching from a remote URL.
-
-```js
-const initSelect2WithAjaxCall = ($context) => {
-    $context.find('.select2-ajax').each(function() {
-        const $select = $(this);
-        const url = $select.data('url');
-        ...
-    });
-};
-```
-
-### ✅ Required HTML Example
+* `data-url` → API endpoint that returns JSON data for the dropdown.
+* `data-id-field` → The unique key from each item in the response (used as the `<option value="">`).
+* `data-text-field` → The field used to display text in the dropdown.
+* `data-placeholder` → Placeholder text shown before an option is selected.
 
 ```html
-<select class="select2-ajax"
-        data-url="{{ route('api.dropdown.options') }}"
-        data-placeholder="Select a company">
-</select>
+    <select
+        class="select2-ajax"                              
+        data-url="{{ route('api.dropdown.options') }}"    
+        data-id-field="id"                                
+        data-text-field="name"                            
+        data-placeholder="Select a Company">
+    </select>
 ```
-
-### 💡 Features
-
-* Lazy loads options via AJAX
-* Uses a placeholder
-* Avoids re-initialization
-
-> ⚠ Ensure `ajaxCall()` is defined globally to support this request. It should trigger the `success()` callback on success.
-
----
-
-1. **Add Required HTML Elements**
-
-   * Table with correct `data-` attributes
-   * Modal and form with matching `#form`, `#form-modal`, etc.
-   * Select inputs with `.select2-ajax` class and `data-url`
-
----
-
-## 📊 DataTable Configuration
-
-The `DataTableManager.init({...})` call initializes a **feature-rich DataTable** with:
-
-* AJAX loading
-* CRUD action buttons
-* Export buttons (Copy, Print, Excel, PDF)
-* Bulk deletion
-
-### ✅ Required HTML
-
-Your table must look like this:
-
-```html
-<table id="data_table"
-       data-url="{{ route('your-data-fetch-route') }}"
-       data-csrf="{{ csrf_token() }}"
-       data-bulk-delete-url="{{ route('your.bulk.delete.route') }}">
-</table>
-```
-
-### 📁 Table Columns Setup
-
-```js
-columns: [
-    { data: null, name: 'checkbox', render: ..., className: "text-center" },
-    { data: null, name: 'serial_number', render: ..., className: "text-center" },
-    { data: 'name', name: 'name' },
-    { data: 'slug', name: 'slug' },
-    { data: null, render: ..., orderable: false }
-]
-```
-
-* **Checkbox column**: Enables multi-row selection
-* **Serial number**: Auto-incremented row number
-* **Name / Slug**: Actual data fields
-* **Actions**: Edit/Delete buttons with proper `data-url`
-
-> 🔗 The `data-url` attributes are dynamically populated using `baseShowUrl` and `baseDestroyUrl`.
-
----
-
-## 📁 Export Options
-
-```js
-exportColumns: [1, 2, 3],
-buttons: [
-    { extend: 'copy' },
-    { extend: 'print' },
-    { extend: 'excel' },
-    { extend: 'pdfHtml5' }
-]
-```
-These allow users to export visible data in various formats. Columns 1, 2, 3 refer to `serial_number`, `name`, and `slug`.
-
-***✅ To get full code see views/company/index.blade.php***
-
----
-
-## 📦 Global Setup inside blade file
-
-add edit/show and delete URLs dynamically generated from Laravel's named routes:
-
-```js
-const baseShowUrl = "{{ route('company-api.show', ':id') }}";
-const baseDestroyUrl = "{{ route('company-api.destroy', ':id') }}";
-```
-
-These are templates for RESTful **Show** and **Delete** operations. it will `.replace(':id', yourId)` with the actual ID.
 
 ---
 
@@ -368,14 +367,11 @@ Route::middleware('auth')->get('/company', function () {
 ### 🔗 API Routes (`routes/api.php`)
 
 ```php
-Route::middleware(['auth:sanctum'])->resource('api-company-data', ModelNameController::class);
-```
 
-> 🧱 **Laravel 12 Note:**
-> If `routes/api.php` doesn't exist:
+Route::middleware(['auth:sanctum'])->group(function () {ßß
+    Route::resource('api-company-data', ModelNameController::class);    
+});
 
-```bash
-php artisan install:api
 ```
 
 ---
@@ -523,7 +519,7 @@ trait IsValidRequest
 
 ---
 
-## 🧰 Controller Methods
+## 🧰 API Controller Methods
 
 ### 📥 Index
 
