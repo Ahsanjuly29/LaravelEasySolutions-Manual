@@ -251,7 +251,7 @@ Your table must look like this:
         <tfoot>
             <tr>
                 <td colspan="100">
-                    {!! $tasks->render() !!}
+                    {!! $allData->render() !!}
                 </td>
             </tr>
         </tfoot>
