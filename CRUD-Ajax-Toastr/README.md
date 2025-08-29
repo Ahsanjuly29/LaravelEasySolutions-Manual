@@ -1,45 +1,3 @@
-
-## 6. jQuery AJAX with Bearer Token
-
-```blade
-<meta name="access-token" content="{{ auth()->user()?->currentAccessToken()?->plainTextToken }}">
-```
-
-```js
-let token = $('meta[name="access-token"]').attr('content');
-
-$.ajaxSetup({
-    headers: {
-        'Authorization': 'Bearer ' + token,
-        'Accept': 'application/json'
-    }
-});
-
-$.get('/api/posts', function(posts) {
-    console.log(posts);
-});
-```
-
-> Or store token in `localStorage/sessionStorage` and use globally in JS.
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # 📚 Laravel CRUD using AJAX. Using Toastr Alerts
 
 Laravel API Resource Controllers, Blade Views, AJAX-based front-end, and Toastr notifications.
@@ -120,10 +78,12 @@ php artisan make:model Company -mcr --api
 ## 🔍 Scope (Optional)
 
 ```php
-public function scopeOwner(Builder $query): void
+public function scopeOwner(Builder $query): Builder
 {
-    $query->with('assignedTo', 'createdBy')->whereAny(['assigned_to', 'created_by'], Auth::user()->id);
+    return $query->with('assignedTo', 'createdBy')
+                 ->whereAny(['assigned_to', 'created_by'], Auth::id());
 }
+
 ```
 
 
@@ -224,30 +184,6 @@ When using Select2 with AJAX, structure your `<select>` element like this:
 
 ---
 
-## 🌐 Step 5: Define Routes
-
-### 📄 Web Routes (`routes/web.php`)
-
-```php
-Route::middleware('auth')->get('/company', function () {
-    return view('company.index', [
-        'allData' => Company::orderBy('id', 'DESC')->paginate(10)
-    ]);
-})->name('company.index');
-```
-
-### 🔗 API Routes (`routes/api.php`)
-
-```php
-
-Route::middleware(['auth:sanctum'])->group(function () {ßß
-    Route::resource('api-company-data', ModelNameController::class);    
-});
-
-```
-
----
-
 # ✅ Controller, API Section & Architecture
 
 ## 📁 Folder Structure
@@ -274,6 +210,13 @@ app/
 
 ---
 
+## FrontendController
+create this FrontendController so u can redirect to pages. as this will be totally api based but blade based also. so its better to use a controller for redirecting to targetted page
+
+```bash
+    php artisan make:controller FrontendController
+```
+
 ## 🧰 API Controller Methods
 
 Add this [file](Controller/Api/CompanyController.php) to project directly or can open file to get help
@@ -287,7 +230,7 @@ Add this [file](Controller/Api/CompanyController.php) to project directly or can
     php artisan make:request CompanyRequest
 ```
 
-This will create file like this
+This will create file like this. attatched the request [file here](Request)
 
 ```php
     use IsValidRequest; // use trait for override methods
@@ -299,7 +242,10 @@ This will create file like this
 
     public function rules(): array
     {
-        // write rules for each inputs
+        // write rules for each inputs, like,
+        return [
+            'name' => 'required|string|max:255'
+        ];
     }
 ```
 
@@ -358,24 +304,50 @@ Can use [this Actions](Actions) file,
 
 ---
 
+## 🌐 Step 5: Define Routes
+
+### 📄 Web Routes (`routes/web.php`)
+
+```php
+Route::middleware('auth')->get('/company', function () {
+    return view('company.index', [
+        'allData' => Company::orderBy('id', 'DESC')->paginate(10)
+    ]);
+})->name('company.index');
+```
+
+### 🔗 API Routes (`routes/api.php`)
+
+```php
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::resource('api-company-data', ModelNameController::class);    
+});
+
+```
+
+---
 
 ## ✅ Sample JSON Response
 
 ```json
 {
   "status": 1,
-  "message": "New company has been created",
-  "data": {
-    "id": 1,
-    "name": "company 1",
-    "due_date": "2025-07-14"
-  },
-  "data": {
-    "id": 2,
-    "name": "company 2",
-    "due_date": "2025-07-14"
-  }
+  "message": "Companies fetched successfully",
+  "data": [
+    {
+      "id": 1,
+      "name": "company 1",
+      "due_date": "2025-07-14"
+    },
+    {
+      "id": 2,
+      "name": "company 2",
+      "due_date": "2025-07-14"
+    }
+  ]
 }
+
 ```
 
 ---

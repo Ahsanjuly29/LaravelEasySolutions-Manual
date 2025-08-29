@@ -110,7 +110,8 @@ $(document).ready(function () {
         $.ajax({
             headers: {
                 'Authorization': `Bearer ${$('meta[name="bearer-token"]').attr('content')}`,
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'Accept': 'application/json'
             },
             type: param.type,
             url: param.url,
