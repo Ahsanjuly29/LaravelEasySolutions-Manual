@@ -21,36 +21,42 @@
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 
     <!-- Tempusdominus Bootstrap 4 -->
-    <link rel="stylesheet" href="assets/css/tempusdominus-bootstrap-4.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap-4.min.css">
-    <link rel="stylesheet" href="assets/css/toastr.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/tempusdominus-bootstrap-4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/toastr.min.css') }}">
 
     <!-- Ionicons -->
-    <link rel="stylesheet" href="assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/ionicons.min.css') }}">
 
     <!-- overlayScrollbars -->
-    <link rel="stylesheet" href="assets/css/OverlayScrollbars.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/OverlayScrollbars.min.css') }}">
 
     <!-- Daterange picker -->
-    <link rel="stylesheet" href="assets/css/daterangepicker.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/daterangepicker.css') }}">
 
     <!-- iCheck for checkboxes and radio inputs -->
-    <link rel="stylesheet" href="assets/css/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/icheck-bootstrap.min.css') }}">
     <!-- Bootstrap Color Picker -->
-    <link rel="stylesheet" href="assets/css/bootstrap-colorpicker.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-colorpicker.min.css') }}">
 
     <!-- Select2 -->
-    <link rel="stylesheet" href="assets/css/select2.min.css">
-    <link rel="stylesheet" href="assets/css/select2-bootstrap4.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/select2-bootstrap4.min.css') }}">
 
     <!-- summernote -->
-    <link rel="stylesheet" href="assets/css/summernote-bs4.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/summernote-bs4.min.css') }}">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="assets/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/fontawesome.all.min.css') }}">
 
     <!-- Theme style -->
-    <link rel="stylesheet" href="assets/css/adminlte.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/adminlte.min.css') }}">
+
+    <style>
+        .table thead th {
+            vertical-align: top;
+        }
+    </style>
 
     @yield('custom-css')
 </head>

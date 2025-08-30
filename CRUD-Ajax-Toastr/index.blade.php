@@ -1,4 +1,4 @@
-@extends('admin.master.app')
+@extends('master.app')
 
 @section('custom-css')
 @endsection
@@ -8,7 +8,7 @@
     <section class="content">
         <div class="container-fluid">
 
-            @include('admin.company.form-modal')
+            @include('company.form-modal')
             <div class="row">
                 <div class="col-sm-8">
                     <button type="button" class="nav-link border border-primary w-100 btn btn-primary create-btn"

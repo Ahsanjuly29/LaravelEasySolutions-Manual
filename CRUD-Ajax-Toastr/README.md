@@ -57,9 +57,9 @@ php artisan make:model Company -mcr --api
 ## 🧾 On model add Fillable or Guarded (both if needed)
 
 ```php
-    protected $fillable = ['name'];
-    // OR
     protected $guarded = ['id'];
+    // OR
+    protected $fillable = ['name'];
 ```
 
 ---
@@ -95,7 +95,7 @@ Set up your template(bootstrap or any html, css template). common base then acco
 
 ### 🧱 Setup view (After Login) pages using blade
 
-#### 🖼️ For Admin LTE 3 [click here](AdminLTE3)
+#### 🖼️ For Admin LTE 3 [click here](AdminLTE3) download resources
 
 Here all the needed files(css, js) are available also blade formatted. 
 
@@ -109,11 +109,7 @@ add this file to. your js and add this to ur js folder.
 
 ---
 
-## ⚡ Step 4: Table View (`index.blade.php`)
-
-after setting up template common files, lets setup our table contents. 
-
-## 🧩 Pages Structure setup. Connect common page with every other pages.
+## ⚡ Step 4: Pages Structure setup. Connect common page with every other pages.
 
 ```blade
 @extends('app')
@@ -135,10 +131,11 @@ after setting up template common files, lets setup our table contents.
 ```
 ---
 
-## Example table page for company page
-Table page [click here](index.blade.php)
+## 🧩 Example table page for company page. Table View (`index.blade.php`)
+Table page [click here](index.blade.php)  </br>
 Form modal [click here](form-modal.blade.php) for create/edit data. using this same modal, can store/update data.
 
+can download or use copy text to use this pages.
 
 ## 🛠 Global Configuration Object for AJAX operation
 
@@ -210,12 +207,6 @@ app/
 
 ---
 
-## FrontendController
-create this FrontendController so u can redirect to pages. as this will be totally api based but blade based also. so its better to use a controller for redirecting to targetted page
-
-```bash
-    php artisan make:controller FrontendController
-```
 
 ## 🧰 API Controller Methods
 
@@ -253,10 +244,11 @@ This will create file like this. attatched the request [file here](Request)
 
 ## 🧬 Trait (`IsValidRequest.php`)
 
-Create a folder inside App named Traits. then create a file named IsValidRequest.php.
-this validationData and failedValidation are overriding functions. here validationData checks if data is actually a json if yes then it will send a custom format response. that is needed for api responses. same for failedValidation. they are mainly override for json responses
+Create a folder inside App named Traits. then create a file named **IsValidRequest.php**
+this **validationData** and **failedValidation** are overriding vendor functions. <br>
+here **validationData** checks if data is actually a **json** if yes then it will send a custom format response. that is needed for api responses. same for **failedValidation**. they are mainly override for **json** responses
 
-get file [here](Traits/IsValidRequest.php)
+get file [here](Traits/IsValidRequest.php). copy text or download for use.
 
 ---
 
@@ -265,6 +257,8 @@ get file [here](Traits/IsValidRequest.php)
 ### 🔧 1. Create folder `Helpers` Folder and a file `helpers.php` inside App folder
 
 inside Helpers Folder create php files. then include_once those files inside helpers.php file.
+<br> 
+for example:
 
 ```php
     include_once('Helpers/ApiDataResponse.php');
@@ -294,9 +288,11 @@ inside Helpers Folder create php files. then include_once those files inside hel
 inside traits a helper function was called `isApiRequestValidator` there it checks if request is json or not. can include all helpers function [click here](Helpers)
 
 
-## ⚙️ Filter Action Class
+## ⚙️ Filter Action Class(Optional)
 
-inside controller index function there is a option for filter data. that is handled using Action.
+using action we can do many things that makes controller compact. |
+inside controller index function there is a option for filtering data. that is handled using Action.
+check example:
 
 ### first create a Folder `Action` then inside create a file `FilterModels.php`
 
@@ -308,6 +304,9 @@ Can use [this Actions](Actions) file,
 
 ### 📄 Web Routes (`routes/web.php`)
 
+routes can be defined 2 ways. as whole project you will build using api/AJAX, blade template.
+
+#### type 1: direct redirecting to view
 ```php
 Route::middleware('auth')->get('/company', function () {
     return view('company.index', [
@@ -315,6 +314,31 @@ Route::middleware('auth')->get('/company', function () {
     ]);
 })->name('company.index');
 ```
+
+#### type 2: redirect to view using controller and make route look clean
+
+```php
+    Route::get('/company', [FrontendController::class, 'company'])->name('company');
+```
+
+if using type 2 then
+
+#### FrontendController
+create this **FrontendController** so u can redirect to pages. As this will be totally api based but blade based also. so its better to use a controller for redirecting to targetted page
+
+```bash
+    php artisan make:controller Frontend/FrontendController
+```
+
+```php
+    function company()
+    {
+        return view('company.index', [
+            'allData' => Company::orderBy('id', 'DESC')->paginate(10)
+        ]);
+    }
+```
+
 
 ### 🔗 API Routes (`routes/api.php`)
 
@@ -324,6 +348,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('api-company-data', ModelNameController::class);    
 });
 
+```
+if not found this route in default then use this command
+
+```bash
+    php artisan install:api
 ```
 
 ---
