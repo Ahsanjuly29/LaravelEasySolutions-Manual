@@ -453,12 +453,16 @@ $(document).ready(function () {
         }
     });
 
-    $(config.checkItemClass).change(function () {
+    // single item boxes, each row on table
+    $(document).on('change', config.checkItemClass, function () {
+        if (!$(config.checkItemClass).length) return;
+
         const checked = $(config.checkItemClass + ":checked").length > 0;
         $(config.multipleDeleteBtnId).toggleClass('d-none', !checked);
         $(config.checkAllBoxId).prop('checked', checked);
     });
 
+    // total table rows select bx 
     $(config.checkAllBoxId).click(function () {
         const isChecked = $(this).is(':checked');
         $(config.checkItemClass).prop('checked', isChecked);
