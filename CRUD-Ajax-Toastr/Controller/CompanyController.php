@@ -18,7 +18,16 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         try {
-            $data = Company::paginate(10);
+
+            $query = Company::query()->select($request->columns);
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->whereAny($request->columns, 'LIKE', "%{$search}%");
+            }
+
+            $data = $query->orderBy('id', 'DESC')->paginate(10);
+
             return successResponse('Showing All Data', $data);
         } catch (\Exception $e) {
             return errorResponse($e);

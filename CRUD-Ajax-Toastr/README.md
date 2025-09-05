@@ -95,16 +95,23 @@ Set up your template(bootstrap or any html, css template). common base then acco
 
 ### 🧱 Setup view (After Login) pages using blade
 
-#### 🖼️ For Admin LTE 3 [click here](AdminLTE3) download resources
+#### 🖼️ For Admin LTE 3 [click here](Templates/AdminLTE3) download resources
 
-Here all the needed files(css, js) are available also blade formatted. 
+Here all AdminLTE3 files(css, js) are available in blade format. 
 
 #### ajax-jquery-crud.js
-i have created a custom file for CRUD operation using AJAX. [ajax-jquery-crud.js](ajax-jquery-crud)
-add this file to. your js and add this to ur js folder.
+This is a custom JavaScript file created for handling CRUD operations using AJAX with jQuery.
+[Download ajax-jquery-crud.js](ajax-jquery-crud)
+
+### ajax-select2.js
+This file provides AJAX integration for Select2, enabling dynamic and interactive dropdowns.
+
+[Download ajax-select2.js](ajax-select2)
 
 ```blade
+    {{-- Common ajax data for CRUD operation --}}
     <script src="{{ asset('assets/js/ajax-jquery-crud.js') }}"></script>
+    <script src="{{ asset('assets/js/ajax-select2.js') }}"></script>
 ```
 
 ---
@@ -112,22 +119,21 @@ add this file to. your js and add this to ur js folder.
 ## ⚡ Step 4: Pages Structure setup. Connect common page with every other pages.
 
 ```blade
-@extends('app')
+    @extends('app')
+    @include('form-modal') // insluding a modal page here
 
-@include('form-modal') // insluding a modal page here
+    @section('custom-css')
+    // if any other css is needed for this page only can declare here 
+    @endsection
 
-@section('custom-css')
-// if any other css is needed for this page only can declare here 
-@endsection
+    @section('main-content')
 
-@section('main-content')
+    // main content will be written here. if its table, dashboard contentsm form, this page main contents will be here.
+    @endsection
 
-// main content will be written here. if its table, dashboard contentsm form, this page main contents will be here.
-@endsection
-
-@section('custom-js')
-// if any other js code is needed ...
-@endsection
+    @section('custom-js')
+    // if any other js code is needed ...
+    @endsection
 ```
 ---
 
@@ -136,6 +142,25 @@ Table page [click here](index.blade.php)  </br>
 Form modal [click here](form-modal.blade.php) for create/edit data. using this same modal, can store/update data.
 
 can download or use copy text to use this pages.
+
+## 🛠 Global Configuration Object for Table AJAX
+
+These global constants are used in the `ajax-jquery-crud.js` file to handle dynamic table data rendering via AJAX. They are designed to work out of the box but can be overridden on individual pages if customization is needed.
+
+```js
+    const $table = $('#dataTable');
+    const $tbody = $table.find('tbody');
+    const $pagination = $('#pagination-wrapper');
+    const baseUrl = $table.data('url');
+    const columns = $table.data('columns'); // Example: ["name", "mobile", "address"]
+```
+url is given on each pageto get data using ajax and columns are given to select dynamically
+``` blade
+    <table class="table table-striped table-hover" id="dataTable"
+        data-url="{{ route('api-company-data.index') }}" data-columns='["name", "mobile", "address"]'>
+    </table>
+```
+
 
 ## 🛠 Global Configuration Object for AJAX operation
 

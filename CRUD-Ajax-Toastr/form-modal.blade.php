@@ -24,9 +24,17 @@
                                     name="mobile">
                             </div>
                             <div class="col-sm-12 mt-1 ">
-                                <label for="address">Address</label>
-                                <textarea name="address" id="address" cols="57" rows="2" style="resize: auto;"></textarea>
+                                <label class="d-block" for="address">Address</label>
+                                <textarea name="address" id="address" class="w-100" style="resize: auto;"></textarea>
                             </div>
+
+                            {{-- <div class="col-sm-12 mt-1 ">
+                                <select class="form-control select2-ajax" data-url="" data-id-field="id"
+                                    data-text-field="name" data-placeholder="Select a Company">
+                                    <option value="">test me</option>
+                                    <option value="1">1test me</option>
+                                </select>
+                            </div> --}}
 
                             <div class="col-sm-12 my-4">
                                 <!-- Add hidden url input for create/Update form -->

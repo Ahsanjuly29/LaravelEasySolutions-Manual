@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
-
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class FrontendController extends Controller
@@ -12,13 +10,11 @@ class FrontendController extends Controller
 
     function dashboard()
     {
-        return view('admin.dashboard', []);
+        return view('admin.dashboard');
     }
 
     function company()
     {
-        return view('admin.company.index', [
-            'allData' => Company::orderBy('id', 'DESC')->paginate(10)
-        ]);
+        return view('admin.company.index');
     }
 }
