@@ -5,19 +5,20 @@ const $table = $('#dataTable');
 const $tbody = $table.find('tbody');
 const $pagination = $('#pagination-wrapper');
 const baseUrl = $table.data('url');
-const columns = $table.data('columns'); // ["name", "mobile", "address"]
+const columns = $table.data('columns'); // serially showable columns on table like, ["name", "mobile", "address"]... will come as modified name from data
 
 
 let currentPage = 1;
 let search = '';
 
 // get data from api server 
-function fetchData(page = 1, searchQuery = '') {
+function fetchData(page = 1, searchQuery = '', highlightId = null) {
+    currentPage = page;
+
     $('#loader').show();
     $.get(baseUrl, {
         page,
         search: searchQuery,
-        columns: columns,
     }, response => {
         $('#loader').hide();
 
@@ -26,8 +27,20 @@ function fetchData(page = 1, searchQuery = '') {
             $pagination.empty();
             return;
         }
-        renderRows(response.data.data);
+
+        // console.log(response);
+        // console.log(response.data.data);
+        // console.log(response.data);
+
+        renderRows(response.data.data, highlightId, response.data.per_page);
         renderPagination(response.data);
+
+        if (highlightId) {
+            setTimeout(() => {
+                $tbody.find(`tr.highlight-row`).removeClass('highlight-row').addClass('fade-out');
+            }, 3000); // fades after 3 seconds
+        }
+
     }).fail(() => {
         $('#loader').hide();
         $tbody.html(`<tr><td colspan="${columns.length + 2}">Error fetching data</td></tr>`);
@@ -36,15 +49,24 @@ function fetchData(page = 1, searchQuery = '') {
 }
 
 // decorate inside table by api response
-function renderRows(rows) {
+function renderRows(rows, highlightId = null, perPage = 10) {
+
     $tbody.empty();
-    if (!rows.length) {
+    if (!rows || rows.length === 0) {
         $tbody.append(`<tr><td colspan="${columns.length + 2}">No data found.</td></tr>`);
         return;
     }
 
-    rows.forEach(item => {
-        let rowHtml = `<tr>`;
+    rows.forEach((item, index) => {
+        const serial = (currentPage - 1) * perPage + index + 1;
+
+        const highlightClass = (item.id == highlightId) ? 'highlight-row' : '';
+        // console.log(`Row ID: ${item.id}, Highlight: ${highlightClass ? 'YES' : 'NO'}`);
+
+        let rowHtml = `<tr class="${highlightClass}">`;
+
+        // Serial number
+        rowHtml += `<td>${serial}</td>`;
 
         // Checkbox
         rowHtml += `
@@ -56,9 +78,11 @@ function renderRows(rows) {
 
         // Data columns
         columns.forEach(col => {
+
             const rawValue = item[col] ?? '';
             const value = String(rawValue).trim();
             const lowerCol = col.toLowerCase();
+
             let cellContent = '';
 
             // 1. Empty/null/undefined
@@ -129,8 +153,6 @@ $('#searchInput').on('input', function () {
 });
 
 function renderPagination(data) {
-
-    // console.log(data);
 
     $pagination.empty();
     const currentPage = data.current_page;
@@ -319,7 +341,7 @@ const handleCrudSuccess = {
     },
     formSubmit: (data) => {
         // Handle form submission success
-        fetchData();
+        fetchData(currentPage, search, data.data.id); // reload current page with highlight
         closeModal();
         toastr.success(data.message);
     },
@@ -364,9 +386,19 @@ const ajaxCall = (param) => {
         data: param.data,
         success: (response) => {
             response.tostrTimeOut = tostrTimeOut;
-            processSuccessResponse(response, param.crud);
+            if (param.successCallback) {
+                param.successCallback(response);
+            } else if (param.crud) {
+                processSuccessResponse(response, param.crud);
+            }
         }
-    }).fail(($xhr) => handleErrorResponse($xhr, tostrTimeOut));
+    }).fail(($xhr) => {
+        if (param.errorCallback) {
+            param.errorCallback($xhr);
+        } else {
+            handleErrorResponse($xhr, tostrTimeOut);
+        }
+    });
 };
 
 // Modal open handler (Create/Edit)
@@ -375,16 +407,31 @@ const openModal = (response) => {
     const $form = $(config.formId);
     const $title = $modal.find(config.titleSelector);
 
+    initSelect2WithAjaxCall($modal);
+
     if (typeof response !== "string" && Object.keys(response).length > 0) {
         $title.text("Edit Form");
+
+        //  $('#url').val(response.data.update_url || response.data.url || `${baseUrl}/${response.data.id}`);
+        $(config.urlInputId).val(`${baseUrl}/${response.data.id}`);
+
         $.each(response.data, (key, value) => {
-            const $field = $(`#${key}`);
+            const $field = $(`[name="${key}"]`);
+
+            if (!$field.length) return;
+
             if ($field.is('select')) {
-                $field.val(value).change();
+                if ($field.find(`option[value="${value}"]`).length) {
+                    $field.val(value).trigger('change');
+                } else {
+                    const newOption = new Option(value, value, true, true);
+                    $field.append(newOption).trigger('change');
+                }
             } else {
                 $field.val(value);
             }
         });
+
         if (!$form.find(`input[name="${config.methodInputName}"]`).length) {
             $form.append(`<input type="hidden" name="${config.methodInputName}" value="PUT">`);
         }

@@ -4,39 +4,45 @@ const initSelect2WithAjaxCall = ($context = $(document)) => {
         const $select = $(this);
         const url = $select.data('url');
         const placeholder = $select.data('placeholder') || 'Select';
-        const minimumInputLength = $select.data('minlength') || 1;
-        const idField = $select.data('id-field') || 'id';
-        const textField = $select.data('text-field') || 'name';
+        const minimumInputLength = $select.data('minlength') || 0;
+
+        const columns = $select.data('columns') || { id: 'id', text: 'name' };
+        const columnsToFetch = Object.values(columns);
 
         const commonOptions = {
             theme: 'bootstrap4',
             placeholder: placeholder,
-            allowClear: true
+            allowClear: true,
+            dropdownParent: $select.closest('.modal')[0] || document.body,
+            minimumInputLength,
         };
 
-        if (url) {
+        if (typeof url === "string" && url.trim().length > 0) {
             $select.select2({
-                ...commonOptions, // Use spread syntax here
-                minimumInputLength: minimumInputLength,
+                ...commonOptions,
                 ajax: {
                     transport: function (params, success, failure) {
                         ajaxCall({
+                            url,
                             type: 'GET',
-                            url: url,
                             dataType: 'JSON',
-                            data: params.data,
+                            data: {
+                                // ...params.data,
+                                search: params.data.term || '',
+                                page: params.data.page || 1,
+                                columns: columnsToFetch
+                            },
                             successCallback: success,
                             errorCallback: failure
                         });
                     },
-                    processResults: function (data) {
-                        return {
-                            results: (data.items || []).map(item => ({
-                                id: item[idField],
-                                text: item[textField]
-                            }))
-                        };
-                    },
+                    processResults: data => ({
+                        results: (data.data?.data || []).map(item => ({
+                            id: item[columns.id],
+                            text: item[columns.text],
+                        })),
+                        pagination: { more: data.data?.current_page < data.data?.last_page },
+                    }),
                     delay: 250,
                     cache: true
                 }
@@ -61,8 +67,8 @@ $(document).ready(function () {
             .toLowerCase()
             .trim()
             .replace(/[^a-z0-9\s-]/g, '') // remove invalid chars
-            .replace(/\s+/g, '_') // collapse whitespace and replace with -
-            .replace(/-+/g, '_'); // collapse multiple hyphens
+            .replace(/\s+/g, '_')         // replace spaces with underscore
+            .replace(/_+/g, '_');         // collapse multiple underscores
         $('#slug').val(slug);
     });
 });

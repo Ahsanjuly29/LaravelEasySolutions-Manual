@@ -28,14 +28,6 @@
                                 <textarea name="address" id="address" class="w-100" style="resize: auto;"></textarea>
                             </div>
 
-                            {{-- <div class="col-sm-12 mt-1 ">
-                                <select class="form-control select2-ajax" data-url="" data-id-field="id"
-                                    data-text-field="name" data-placeholder="Select a Company">
-                                    <option value="">test me</option>
-                                    <option value="1">1test me</option>
-                                </select>
-                            </div> --}}
-
                             <div class="col-sm-12 my-4">
                                 <!-- Add hidden url input for create/Update form -->
                                 <input type="hidden" id="url" value="">
@@ -60,3 +52,24 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+{{-- example of select with dynamic ajax and also static options --}}
+{{-- <div class="col-sm-6 mt-1 ">
+    <label>Type</label>
+    <select class="form-control select2-ajax" name="type" data-url="" data-placeholder="Select Type">
+        <option value="">Select Type</option>
+        <option value="individual">individual</option>
+        <option value="company">company</option>
+        <option value="stock">stock</option>
+        <option value="crypto">crypto</option>
+        <option value="real_estate">real_estate</option>
+        <option value="deal">deal</option>
+    </select>
+</div>
+<div class="col-sm-6 mt-1 ">
+    <label>Company</label>
+    <select class="form-control select2-ajax" name="company" data-url="{{ route('api-company-data.index') }}"
+        data-columns='{"id":"id", "text":"name"}' data-placeholder="Select a Company">
+        <option value="">Select company</option>
+    </select>
+</div> --}}

@@ -1,34 +1,30 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Actions\ModelApi\FilterModel;
-use App\Actions\ModelApi\FilterModels;
+use App\Actions\FilterModel;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyRequest;
 use App\Models\Company;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, FilterModel $filterModel)
     {
         try {
+            $query = $filterModel->handle(Company::query(), $request);
 
-            $query = Company::query()->select($request->columns);
-
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->whereAny($request->columns, 'LIKE', "%{$search}%");
+            if (!empty($request->columns)) {
+                $query->orderBy('name', 'ASC');
+            } else {
+                $query->orderBy('id', 'DESC');
             }
 
-            $data = $query->orderBy('id', 'DESC')->paginate(10);
-
-            return successResponse('Showing All Data', $data);
+            return successResponse('Showing All Data', $query->paginate(10));
         } catch (\Exception $e) {
             return errorResponse($e);
         }
@@ -57,8 +53,6 @@ class CompanyController extends Controller
             if (empty($data)) {
                 throw new \Exception('Unable to Find This Task');
             }
-
-            $data['url'] = route('api-company-data.update', $id);
 
             return successResponse('Open Modal', $data);
         } catch (\Exception $e) {
