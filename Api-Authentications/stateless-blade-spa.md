@@ -70,9 +70,17 @@ npm install && npm run build
 ```bash
 composer require laravel/sanctum
 php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
-php artisan sanctum:install
+php artisan breeze:install
 php artisan migrate
 ```
+
+choose 
+*** Blade with Alpine  ***
+
+## if want only API service then choose api only.
+
+*** then testing choose phpunit or pest ***
+
 
 ---
 
@@ -133,16 +141,16 @@ public function destroy(Request $request): Response
 ### 6. Exception Handling Customization (`bootstrap/app.php`)
 
 ```php
-use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Configuration\Exceptions;
-use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Auth\AuthenticationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Illuminate\Routing\Middleware\ThrottleRequests;
-use Illuminate\Routing\Middleware\SubstituteBindings;
+    use App\Http\Middleware\EnsureEmailIsVerified;
+    use Illuminate\Cookie\Middleware\EncryptCookies;
+    use Illuminate\Foundation\Application;
+    use Illuminate\Foundation\Configuration\Exceptions;
+    use Illuminate\Foundation\Configuration\Middleware;
+    use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+    use Illuminate\Routing\Middleware\SubstituteBindings;
+    use Illuminate\Routing\Middleware\ThrottleRequests;
+    use Illuminate\Session\Middleware\StartSession;
+    use Illuminate\View\Middleware\ShareErrorsFromSession;
 ```
 
 ```php
@@ -156,10 +164,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Web middleware group (for Blade)
         $middleware->group('web', [
-            \Illuminate\Cookie\Middleware\EncryptCookies::class,
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            EncryptCookies::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
             SubstituteBindings::class,
         ]);
 
@@ -171,7 +179,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Middleware alias (if needed)
         $middleware->alias([
-            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'verified' => EnsureEmailIsVerified::class,
         ]);
     })
 ```
