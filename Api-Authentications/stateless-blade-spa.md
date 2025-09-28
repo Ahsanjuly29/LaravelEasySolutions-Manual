@@ -141,13 +141,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 ```
 
 ```php
@@ -159,29 +154,27 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Web middleware group
+        // Web middleware group (for Blade)
         $middleware->group('web', [
-            EncryptCookies::class,
-            StartSession::class,
-            ShareErrorsFromSession::class,
-            VerifyCsrfToken::class,
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
             SubstituteBindings::class,
         ]);
 
-        // API middleware group
+        // API middleware group (stateless)
         $middleware->group('api', [
-            EnsureFrontendRequestsAreStateful::class,       // Sanctum middleware
-            ThrottleRequests::class . ':api',               // Throttle API requests
+            ThrottleRequests::class . ':api',  // rate limiting
             SubstituteBindings::class,
         ]);
 
-        // Custom middleware alias
+        // Middleware alias (if needed)
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Render JSON for API and AJAX requests
         $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
             return $request->is('api/*') || $request->expectsJson();
         });
@@ -208,11 +201,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], Response::HTTP_METHOD_NOT_ALLOWED);
             }
 
-            // Let Laravel handle everything else
-            return null;
+            return null; // default Laravel error handling for other cases
         });
     })
     ->create();
+
 ```
 
 ---
