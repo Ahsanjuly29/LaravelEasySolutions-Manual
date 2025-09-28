@@ -1,26 +1,61 @@
 # ✅ Stateless Sanctum API with Blade Frontend
 
+## ✅ Quick Recap
+
+| Feature         | Web (Blade)                  | API (Stateless)                          |
+| --------------- | ---------------------------- | ---------------------------------------- |
+| Authentication  | Session + Cookies (stateful) | API Token (Bearer Token)                 |
+| Token storage   | N/A                          | Stored client-side (localStorage, etc.)  |
+| Request headers | Cookies sent automatically   | `Authorization: Bearer {token}` required |
+| CSRF Protection | Yes                          | Not applicable (token based)             |
+
+---
+
+## 🔐 Security Notes
+
+* Always use HTTPS to protect tokens in transit.
+* Protect API tokens — never expose them in public.
+* Revoke tokens on logout or suspicious activity.
+* Use appropriate token expiration policies.
+* Use Laravel’s built-in CSRF protection for web forms.
+
+---
+
+## 🧪 Testing
+
+1. Register or login via Blade UI web forms.
+2. Retrieve token from API login response when testing API login.
+3. Use tools like Postman or your frontend to send authenticated requests with the token.
+4. Validate proper JSON error responses on API failures.
+5. Confirm session cookies (`laravel_session`, `XSRF-TOKEN`) for web authentication.
+
+---
+
 > **Hybrid Laravel 12 app using Sanctum where:**
 >
-> * **Web** is authenticated via Sanctum (session + cookies)
-> * **API** is authenticated via Sanctum **API tokens (Personal Access Tokens)**, *not* cookies
+> * **Web** uses Sanctum session + cookies (stateful)
+> * **API** uses Sanctum **Personal Access Tokens** (stateless, no cookies)
 
-**This means:**
+**Meaning:**
 
-* No reliance on session cookies for API authentication
-* API clients manually send `Authorization: Bearer {token}` with each request
-
----
-
-## Laravel 12 + Sanctum (Stateless) + Blade + API CRUD Setup
+* API authentication is token-based, not cookie-based
+* Clients send `Authorization: Bearer {token}` on each API request
 
 ---
 
-### 1. Install & Setup
+## 🚀 Overview
 
-#### Install Laravel Breeze (Blade UI)
+This setup leverages Laravel Sanctum to provide:
 
-Adds Breeze for basic auth scaffolding (login, registration):
+* Seamless session-based authentication for Blade views (web)
+* Secure, stateless API authentication using API tokens for SPAs, mobile apps, or external clients
+* Clean separation of concerns and easy token management
+
+---
+
+## 🧱 Setup & Configuration
+
+### 1. Install Laravel Breeze (Blade UI)
 
 ```bash
 composer require laravel/breeze --dev
@@ -30,7 +65,7 @@ npm install && npm run build
 
 ---
 
-#### Install Laravel Sanctum (API Token Authentication)
+### 2. Install Laravel Sanctum
 
 ```bash
 composer require laravel/sanctum
@@ -41,19 +76,17 @@ php artisan migrate
 
 ---
 
-### 2. Sanctum Configuration
-
-Edit `config/sanctum.php`:
+### 3. Sanctum Config Update (`config/sanctum.php`)
 
 ```php
-'stateful' => [], // Empty array disables cookie-based stateful auth for APIs
+'stateful' => [],  // Empty disables cookie-based stateful API authentication
 ```
 
 ---
 
-### 3. Token Generation on Login (Stateless API Support)
+### 4. Token Generation on Login
 
-In your `AuthenticatedSessionController` or login controller:
+In your login controller (`AuthenticatedSessionController`):
 
 ```php
 public function store(LoginRequest $request)
@@ -72,18 +105,18 @@ public function store(LoginRequest $request)
         ]);
     }
 
-    return response()->noContent(); // For normal web login flow
+    return response()->noContent();
 }
 ```
 
 ---
 
-### 4. Logout (Revoke Token & Session)
+### 5. Logout (Revoke Token & Session)
 
 ```php
 public function destroy(Request $request): Response
 {
-    $request->user()?->currentAccessToken()?->delete(); // Revoke current token
+    $request->user()?->currentAccessToken()?->delete(); // Revoke token
 
     Auth::guard('web')->logout();
 
@@ -97,65 +130,94 @@ public function destroy(Request $request): Response
 
 ---
 
-### 5. Exception Handling Customization
-
-Modify your `bootstrap/app.php` to customize exception rendering for APIs:
+### 6. Exception Handling Customization (`bootstrap/app.php`)
 
 ```php
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+```
 
-->withMiddleware(function (Middleware $middleware): void {
-    $middleware->api(prepend: [
-        \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-    ]);
+```php
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        // Web middleware group
+        $middleware->group('web', [
+            EncryptCookies::class,
+            StartSession::class,
+            ShareErrorsFromSession::class,
+            VerifyCsrfToken::class,
+            SubstituteBindings::class,
+        ]);
 
-    $middleware->alias([
-        'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
-    ]);
-})
-->withExceptions(function ($exceptions) {
-    $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
-        return $request->is('api/*') || $request->expectsJson();
-    });
+        // API middleware group
+        $middleware->group('api', [
+            EnsureFrontendRequestsAreStateful::class,       // Sanctum middleware
+            ThrottleRequests::class . ':api',               // Throttle API requests
+            SubstituteBindings::class,
+        ]);
 
-    $exceptions->render(function (Throwable $e, Request $request) {
-        if ($e instanceof AuthenticationException) {
-            return response()->json([
-                'status' => 0,
-                'message' => $e->getMessage(),
-            ], Response::HTTP_UNAUTHORIZED);
-        }
+        // Custom middleware alias
+        $middleware->alias([
+            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+        ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        // Render JSON for API and AJAX requests
+        $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
 
-        if ($e instanceof NotFoundHttpException) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'Route not found.',
-            ], Response::HTTP_NOT_FOUND);
-        }
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($e instanceof AuthenticationException) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => $e->getMessage(),
+                ], Response::HTTP_UNAUTHORIZED);
+            }
 
-        if ($e instanceof MethodNotAllowedHttpException) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'Method not allowed.',
-            ], Response::HTTP_METHOD_NOT_ALLOWED);
-        }
+            if ($e instanceof NotFoundHttpException) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Route not found.',
+                ], Response::HTTP_NOT_FOUND);
+            }
 
-        // Default handling: let Laravel handle it
-        return null;
-    });
-})
-->create();
+            if ($e instanceof MethodNotAllowedHttpException) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'Method not allowed.',
+                ], Response::HTTP_METHOD_NOT_ALLOWED);
+            }
+
+            // Let Laravel handle everything else
+            return null;
+        });
+    })
+    ->create();
 ```
 
 ---
 
-### 6. Protect API Routes
-
-In `routes/api.php`:
+### 7. Protect API Routes (`routes/api.php`)
 
 ```php
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -165,20 +227,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 ---
 
-### 7. API Client Requirement
+### 8. API Client Usage
 
-When consuming API routes, clients must send the personal access token in the Authorization header:
+Send the token with each API request via HTTP header:
 
 ```http
 Authorization: Bearer {personal-access-token}
 ```
-
----
-
-### 💡 Tips
-
-* You can manage tokens (store, update, delete) via cache or cookies depending on your client type (SPA, mobile app, etc.).
-* For more info on Cache and Cookies in Laravel, check [Laravel Cache & Cookies Guide](https://github.com/Ahsanjuly29/LaravelEasySolutions-Manual/tree/main/Cache-Cookies)
 
 ---
  
