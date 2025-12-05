@@ -59,7 +59,7 @@ This setup leverages Laravel Sanctum to provide:
 
 ```bash
 composer require laravel/breeze --dev
-php artisan breeze:install blade
+php artisan breeze:install
 npm install && npm run build
 ```
 
@@ -70,7 +70,7 @@ npm install && npm run build
 ```bash
 composer require laravel/sanctum
 php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
-php artisan breeze:install
+php artisan install:api
 php artisan migrate
 ```
 

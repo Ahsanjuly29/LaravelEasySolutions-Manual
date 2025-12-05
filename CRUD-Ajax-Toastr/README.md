@@ -302,6 +302,22 @@ for example:
     }
 ```
 
+
+### add rate limiter on AppserviceProvider
+
+```php
+    use Illuminate\Support\ServiceProvider;
+    use Illuminate\Cache\RateLimiting\Limit;
+    use Illuminate\Http\Request;
+    use Illuminate\Support\Facades\RateLimiter;
+```
+
+```php
+    RateLimiter::for('api', function (Request $request) {
+        return Limit::perMinute(60);
+    });
+```
+
 ### 🚀 4. Dump Autoload
 
 ```bash
