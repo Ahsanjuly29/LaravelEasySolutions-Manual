@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="https://media.licdn.com/dms/image/v2/D5622AQG2Xy9rv4X9gA/feedshare-shrink_1280/B56Z5tFdLTGoAM-/0/1779946607611?e=1781740800&v=beta&t=xj5ghEkW25q3uSFWGEyA973sdZARSoylwNi50AO1YOU" alt="Cover Image" width="100%">
+</p>
 
 ### 🎯 Main Challenge
 
